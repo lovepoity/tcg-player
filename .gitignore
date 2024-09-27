@@ -1,0 +1,77 @@
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Composer dependencies
+/vendor/
+
+# Node modules (if using npm for front-end dependencies)
+/node_modules/
+
+# Environment configuration
+.env
+
+# Logs
+*.log
+/logs/
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+
+# Cache files
+/cache/
+
+# Compiled files
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Packages
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Database files
+*.sql
+*.sqlite
+
+# Backup files
+*.bak
+*.gho
+*.ori
+*.orig
+*.tmp
+
+# PHP specific
+/phpunit.xml
+
+# Application specific
+/public/uploads/
+/config/database.php
+
+# Ignore all .htaccess files except the one in the root directory
+/*/.htaccess
+!/.htaccess
+
+# Ignore sensitive or environment-specific files
+config.php
+database.php
+
+# But don't ignore these specific files
+!important.php

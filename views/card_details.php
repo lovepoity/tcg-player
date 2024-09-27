@@ -20,19 +20,28 @@ try {
 }
 ?>
 
-<h1><?php echo htmlspecialchars($card['name']); ?></h1>
-<img src="/public/images/product/<?php echo htmlspecialchars($card['image_filename']); ?>" alt="<?php echo htmlspecialchars($card['name']); ?>">
-<p>Rarity: <?php echo htmlspecialchars($card['rarity']); ?></p>
-<p>Card Number: <?php echo htmlspecialchars($card['card_number']); ?></p>
-<p>Color: <?php echo htmlspecialchars($card['color']); ?></p>
-<p>Type: <?php echo htmlspecialchars($card['card_type']); ?></p>
-<p>Cost: <?php echo htmlspecialchars($card['cost']); ?></p>
-<p>Power: <?php echo htmlspecialchars($card['power']); ?></p>
-<p>Subtype: <?php echo htmlspecialchars($card['subtype']); ?></p>
-<p>Attribute: <?php echo htmlspecialchars($card['attribute']); ?></p>
-<p>Artist: <?php echo htmlspecialchars($card['artist']); ?></p>
-<p>Price: $<?php echo htmlspecialchars($card['price']); ?></p>
-<p>Product Details: <?php echo nl2br(htmlspecialchars($card['product_details'])); ?></p>
+<div class="card-details">
+  <h1><?php echo htmlspecialchars($card['name']); ?></h1>
+  <div class="card-image">
+    <img src="/public/images/product/<?php echo htmlspecialchars($card['image_filename']); ?>" alt="<?php echo htmlspecialchars($card['name']); ?>">
+  </div>
+  <div class="card-info">
+    <p><strong>Rarity:</strong> <?php echo htmlspecialchars($card['rarity']); ?></p>
+    <p><strong>Card Number:</strong> <?php echo htmlspecialchars($card['card_number']); ?></p>
+    <p><strong>Color:</strong> <?php echo htmlspecialchars($card['color']); ?></p>
+    <p><strong>Type:</strong> <?php echo htmlspecialchars($card['card_type']); ?></p>
+    <p><strong>Cost:</strong> <?php echo htmlspecialchars($card['cost']); ?></p>
+    <p><strong>Power:</strong> <?php echo htmlspecialchars($card['power']); ?></p>
+    <p><strong>Subtype:</strong> <?php echo htmlspecialchars($card['subtype']); ?></p>
+    <p><strong>Attribute:</strong> <?php echo htmlspecialchars($card['attribute']); ?></p>
+    <p><strong>Artist:</strong> <?php echo htmlspecialchars($card['artist']); ?></p>
+    <p><strong>Price:</strong> $<?php echo number_format($card['price'], 2); ?></p>
+  </div>
+  <div class="card-details">
+    <h2>Product Details</h2>
+    <p><?php echo nl2br(htmlspecialchars($card['product_details'])); ?></p>
+  </div>
+</div>
 
 <?php
 include '../includes/footer.php';

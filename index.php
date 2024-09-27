@@ -5,6 +5,7 @@ include 'includes/header.php';
 <div class="container">
   <!-- BANNER -->
   <div class="container__banner">
+    <div class="banner-overlay"></div>
     <h1>MAGIC : THE GATHERING</h1>
     <p>Duskmourn: House of Horror</p>
     <span>Releases Sept. 27th</span>

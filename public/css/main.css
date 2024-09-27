@@ -5,6 +5,7 @@
   box-sizing: inherit;
   list-style: none;
   outline: none;
+  text-decoration: none;
 }
 html {
   box-sizing: border-box;
@@ -39,7 +40,7 @@ header{
   justify-content: center;
   position: relative;
   height: 32px;
-  width: 73%;
+  width: 70%;
   font-size: 1.6rem;
 }
 .header__search select{
@@ -171,6 +172,7 @@ header{
 /* FOOTER */
 footer{
   width: 100%;
+  margin-top: 25px;
 }
 .footer__banner{
   height: 65px;

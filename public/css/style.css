@@ -217,7 +217,6 @@
   .container__content-grid {
     grid-template-columns: 1fr;
   }
-  
   .latest-grid {
     grid-template-columns: 1fr;
   }

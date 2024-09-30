@@ -10,7 +10,6 @@
     content="TCG Player is an online retail website specializing in TCG gear, desk, chair, keyboard, mouse and headset.">
 
   <!-- FONTAWESOME -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   <link rel="icon" href="/public/images/favicon.ico">
@@ -20,7 +19,8 @@
   <!-- CSS -->
   <link rel="stylesheet" href="/public/css/main.css">
   <link rel="stylesheet" href="/public/css/style.css">
-  <link rel="stylesheet" href="/public/css/sub-page.css">
+  <link rel="stylesheet" href="/public/css/sub_page.css">
+  <link rel="stylesheet" href="/public/css/card_detail.css">
   <!-- END CSS -->
   <!-- ----------------------------------------------------------------------------- -->
 

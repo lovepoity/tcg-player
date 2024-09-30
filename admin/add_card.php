@@ -1,4 +1,3 @@
-```php:admin/add_card.php
 <?php
 session_start();
 include 'includes/admin_header.php';
@@ -14,7 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   // Xử lý thêm card mới
   $name = $_POST['name'];
   $rarity = $_POST['rarity'];
-  $price = $_POST['price'];
   $product_details = $_POST['product_details'];
   $card_number = $_POST['card_number'];
   $color = $_POST['color'];
@@ -24,10 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $subtype = $_POST['subtype'];
   $attribute = $_POST['attribute'];
   $artist = $_POST['artist'];
-
-  // Thêm các trường mới
-  $listing = $_POST['listing'];
-  $market_price = $_POST['market_price'];
+  $set_id = $_POST['set_id'];
 
   // Kiểm tra xem có tệp hình ảnh không
   if (isset($_FILES['image_upload']) && $_FILES['image_upload']['error'] == 0) {
@@ -42,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
       // Xử lý lỗi tải lên
       echo "Sorry, there was an error uploading your file.";
+      exit();
     }
   } else {
     // Nếu không có tệp mới, có thể xử lý theo cách khác (ví dụ: thông báo lỗi)
@@ -49,14 +45,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
   }
 
-  // Thêm card vào cơ sở dữ liệu
-  $query = "INSERT INTO cards (name, image_filename, rarity, price, product_details, card_number, color, card_type, cost, power, subtype, attribute, artist, listing, market_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  // Thêm card vào cơ sở dữ liệu (đã loại bỏ price, market_price, và quantity)
+  $query = "INSERT INTO cards (name, image_filename, rarity, product_details, card_number, color, card_type, cost, power, subtype, attribute, artist, set_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   $stmt = $conn->prepare($query);
-  $stmt->execute([$name, $image_filename, $rarity, $price, $product_details, $card_number, $color, $card_type, $cost, $power, $subtype, $attribute, $artist, $listing, $market_price]);
+  $stmt->execute([$name, $image_filename, $rarity, $product_details, $card_number, $color, $card_type, $cost, $power, $subtype, $attribute, $artist, $set_id]);
 
   header("Location: index.php");
   exit();
 }
+
+// Lấy danh sách các bộ sưu tập
+$set_query = "SELECT id, name FROM sets ORDER BY name ASC";
+$set_stmt = $conn->prepare($set_query);
+$set_stmt->execute();
+$sets = $set_stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <h1>Add New Card</h1>
@@ -110,17 +112,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <input type="text" id="artist" name="artist" required>
   </div>
   <div class="form-group">
-    <label for="price">Price:</label>
-    <input type="number" id="price" name="price" step="0.01" required>
-  </div>
-  <!-- Thêm các trường mới -->
-  <div class="form-group">
-    <label for="listing">Listing:</label>
-    <input type="text" id="listing" name="listing" required>
-  </div>
-  <div class="form-group">
-    <label for="market_price">Market Price:</label>
-    <input type="number" id="market_price" name="market_price" step="0.01" required>
+    <label for="set_id">Set:</label>
+    <select id="set_id" name="set_id" required>
+      <option value="">Select a set</option>
+      <?php foreach ($sets as $set): ?>
+        <option value="<?php echo $set['id']; ?>"><?php echo htmlspecialchars($set['name']); ?></option>
+      <?php endforeach; ?>
+    </select>
   </div>
   <button type="submit" class="btn btn-primary">Add Card</button>
 </form>

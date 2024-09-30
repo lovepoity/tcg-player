@@ -1,4 +1,4 @@
-# TCG Player Clone
+# TCG Player
 
 ## Description
 This project is a clone of the TCG Player website, focusing on displaying and managing trading cards from games such as Magic: The Gathering, Pokémon, Yu-Gi-Oh!, and other trading card games.

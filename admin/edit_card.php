@@ -24,11 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $subtype = $_POST['subtype'];
   $attribute = $_POST['attribute'];
   $artist = $_POST['artist'];
-  $price = $_POST['price'];
-
-  // Thêm các trường mới
-  $listing = $_POST['listing'];
-  $market_price = $_POST['market_price'];
+  $set_id = $_POST['set_id'];
+  // Đã loại bỏ $listing = $_POST['listing'];
 
   // Kiểm tra xem có tệp hình ảnh mới không
   if (isset($_FILES['image_upload']) && $_FILES['image_upload']['error'] == 0) {
@@ -49,9 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $image_filename = $_POST['current_image']; // Lưu tên ảnh hiện tại
   }
 
-  $query = "UPDATE cards SET name = ?, image_filename = ?, product_details = ?, rarity = ?, card_number = ?, color = ?, card_type = ?, cost = ?, power = ?, subtype = ?, attribute = ?, artist = ?, price = ?, listing = ?, market_price = ? WHERE id = ?";
+  // Cập nhật câu lệnh UPDATE (đã loại bỏ price, quantity, market_price, và listing)
+  $query = "UPDATE cards SET name = ?, image_filename = ?, product_details = ?, rarity = ?, card_number = ?, color = ?, card_type = ?, cost = ?, power = ?, subtype = ?, attribute = ?, artist = ?, set_id = ? WHERE id = ?";
   $stmt = $conn->prepare($query);
-  $stmt->execute([$name, $image_filename, $product_details, $rarity, $card_number, $color, $card_type, $cost, $power, $subtype, $attribute, $artist, $price, $listing, $market_price, $id]);
+  $stmt->execute([$name, $image_filename, $product_details, $rarity, $card_number, $color, $card_type, $cost, $power, $subtype, $attribute, $artist, $set_id, $id]);
 
   header("Location: index.php");
   exit();
@@ -67,6 +65,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
   }
 }
+
+// Lấy danh sách các bộ sưu tập
+$set_query = "SELECT id, name FROM sets ORDER BY name ASC";
+$set_stmt = $conn->prepare($set_query);
+$set_stmt->execute();
+$sets = $set_stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <div class="admin-form">
@@ -125,17 +129,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       <input type="text" id="artist" name="artist" value="<?php echo htmlspecialchars($card['artist']); ?>" required>
     </div>
     <div class="form-group">
-      <label for="price">Price:</label>
-      <input type="number" id="price" name="price" step="0.01" value="<?php echo $card['price']; ?>" required>
-    </div>
-    <!-- Thêm các trường mới -->
-    <div class="form-group">
-      <label for="listing">Listing:</label>
-      <input type="text" id="listing" name="listing" value="<?php echo htmlspecialchars($card['listing']); ?>" required>
-    </div>
-    <div class="form-group">
-      <label for="market_price">Market Price:</label>
-      <input type="number" id="market_price" name="market_price" step="0.01" value="<?php echo $card['market_price']; ?>" required>
+      <label for="set_id">Set:</label>
+      <select id="set_id" name="set_id" required>
+        <option value="">Select a set</option>
+        <?php foreach ($sets as $set): ?>
+          <option value="<?php echo $set['id']; ?>" <?php echo ($card['set_id'] == $set['id']) ? 'selected' : ''; ?>>
+            <?php echo htmlspecialchars($set['name']); ?>
+          </option>
+        <?php endforeach; ?>
+      </select>
     </div>
     <button type="submit" class="btn btn-primary">Update Card</button>
   </form>

@@ -2,31 +2,69 @@
 include '../includes/header.php';
 include '../includes/db_connect.php';
 
+// Hàm helper để hiển thị HTML an toàn
+function e($string)
+{
+  return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
+}
+
+// Hàm helper để định dạng số
+function formatNumber($number, $decimals = 2)
+{
+  return number_format($number, $decimals);
+}
+
+// Lấy thông tin card
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $query = "SELECT c.*, s.name AS set_name, 
           MIN(cl.price) AS market_price,
           MAX(cl.price) AS max_price,
+          AVG(cl.price) AS avg_price,
+          COUNT(DISTINCT cl.store_id) AS total_stores,
           SUM(cl.quantity) AS total_quantity
           FROM cards c
           JOIN sets s ON c.set_id = s.id 
           LEFT JOIN card_listings cl ON c.id = cl.card_id
           WHERE c.id = ?
           GROUP BY c.id";
-try {
-  $stmt = $conn->prepare($query);
-  $stmt->execute([$id]);
-  $card = $stmt->fetch(PDO::FETCH_ASSOC);
+$stmt = $conn->prepare($query);
+$stmt->execute([$id]);
+$card = $stmt->fetch(PDO::FETCH_ASSOC);
 
-  if (!$card) {
-    echo "Card not found.";
-    include '../includes/footer.php';
-    exit;
-  }
-} catch (PDOException $e) {
-  echo "Error: " . $e->getMessage();
+if (!$card) {
+  echo "Card not found.";
+  include '../includes/footer.php';
   exit;
 }
+
+// Lấy danh sách các listing cho card này
+$listing_query = "SELECT cl.*, s.name as store_name
+                  FROM card_listings cl
+                  JOIN stores s ON cl.store_id = s.id
+                  WHERE cl.card_id = ?
+                  ORDER BY cl.price DESC
+                  LIMIT 5";
+$listing_stmt = $conn->prepare($listing_query);
+$listing_stmt->execute([$id]);
+$listings = $listing_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Lấy 12 sản phẩm ngẫu nhiên từ cùng set, ngoại trừ sản phẩm hiện tại
+$recommend_query = "SELECT c.*, s.name AS set_name, 
+                    MIN(cl.price) AS market_price,
+                    AVG(cl.price) AS avg_price,
+                    SUM(cl.quantity) AS total_quantity
+                    FROM cards c
+                    JOIN sets s ON c.set_id = s.id 
+                    LEFT JOIN card_listings cl ON c.id = cl.card_id
+                    WHERE c.set_id = ? AND c.id != ?
+                    GROUP BY c.id
+                    ORDER BY RAND() LIMIT 12";
+$stmt = $conn->prepare($recommend_query);
+$stmt->execute([$card['set_id'], $id]);
+$recommended_cards = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
+<!-- HTML -->
 <div class="card__details">
   <div class="navbar__sub-page">
     <!-- FILTER -->
@@ -49,8 +87,8 @@ try {
     </div>
     <!-- END FILTER -->
     <div class="listing--price">
-      <?php if ($card['total_quantity'] > 0): ?>
-        <p style="font-weight: bold; text-decoration: underline;" class="product__listing"><?php echo $card['total_quantity']; ?> Listings</p>
+      <?php if ($card['total_stores'] > 0): ?>
+        <p style="font-weight: bold; text-decoration: underline;" class="product__listing"><?php echo $card['total_stores']; ?> Listings</p>
         <p>As low as $<?php echo number_format($card['market_price'], 2); ?></p>
       <?php else: ?>
         <p style="font-weight: bold; text-decoration: underline;" class="product__listing">Out of Stock</p>
@@ -137,7 +175,7 @@ try {
             </div>
             <!-- ALL LISTING -->
             <div class="details-info__all-listing">
-              <a class="details-info__all-listing-link" href="#">View <?php echo $card['total_quantity']; ?> Other Listings</a>
+              <a class="details-info__all-listing-link" href="#listing">View <?php echo $card['total_stores']; ?> Other Listings</a>
               <p class="details-info__all-listing-price">As low as $<?php echo number_format($card['market_price'], 2); ?></p>
             </div>
             <!-- END ALL LISTING -->
@@ -153,46 +191,50 @@ try {
       </div>
     </div>
     <!-- END CARD DETAILS -->
-    <!-- Thêm đoạn code này ngay trước phần recommend -->
-    <?php
-    // Lấy 12 sản phẩm ngẫu nhiên từ cùng set, ngoại trừ sản phẩm hiện tại
-    $recommend_query = "SELECT cards.*, sets.name AS set_name FROM cards 
-                        JOIN sets ON cards.set_id = sets.id 
-                        WHERE cards.set_id = ? AND cards.id != ?
-                        ORDER BY RAND() LIMIT 12";
-    try {
-      $stmt = $conn->prepare($recommend_query);
-      $stmt->execute([$card['set_id'], $id]);
-      $recommended_cards = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-      echo "Error: " . $e->getMessage();
-    }
-    ?>
-
-    <!-- Cập nhật phần recommend như sau -->
     <div class="card__details-recommend">
+      <!-- LISTING -->
+      <div id="listing" class="card__detail-listing">
+        <div class="listing__quantity"><?php echo $card['total_stores']; ?> Listings</div>
+        <div class="listing__price">
+          As low as $<?php echo number_format($card['market_price'], 2); ?>
+        </div>
+        <?php
+        foreach ($listings as $listing):
+        ?>
+          <div class="listing__store">
+            <div class="listing__store-name listing__store-item"><?php echo htmlspecialchars($listing['store_name']); ?></div>
+            <div class="listing__store-info listing__store-item">
+              <p><?php echo htmlspecialchars($listing['condition'] ?? 'Near Mint Foil'); ?></p>
+              <div class="listing__store-info-price">$<?php echo number_format($listing['price'], 2); ?></div>
+              <div class="listing__store-info-shipping">+ $<?php echo number_format($listing['shipping_cost'] ?? 0, 2); ?> Shipping</div>
+            </div>
+            <div class="listing__store-quantity listing__store-item">
+              <select name="quantity" id="quantity_<?php echo $listing['id']; ?>" <?php echo ($listing['quantity'] === 0) ? 'disabled' : ''; ?>>
+                <?php if ($listing['quantity'] === 0): ?>
+                  <option value="0">0</option>
+                <?php else: ?>
+                  <?php
+                  $max_quantity = min($listing['quantity'], 100); // Giới hạn tối đa 100 hoặc số lượng có sẵn
+                  for ($i = 1; $i <= $max_quantity; $i++):
+                  ?>
+                    <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+                  <?php endfor; ?>
+                <?php endif; ?>
+              </select>
+              <span style="font-weight: bold; text-decoration: underline; color: #0f0f0f;" class="product__listing">
+                of <?php echo $listing['quantity']; ?>
+              </span>
+              <button <?php echo ($listing['quantity'] === 0) ? 'disabled' : ''; ?>>
+                <?php echo ($listing['quantity'] === 0) ? 'Out of Stock' : 'Add to Cart'; ?>
+              </button>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      </div>
+      <!-- END LISTING -->
+      <!-- RECOMMEND -->
       <div class="card__recommend">
         <h2>Customers Also Purchased</h2>
-        <?php
-        // Lấy 12 sản phẩm ngẫu nhiên từ cùng set, ngoại trừ sản phẩm hiện tại
-        $recommend_query = "SELECT c.*, s.name AS set_name, 
-                        MIN(cl.price) AS market_price,
-                        MAX(cl.price) AS max_price,
-                        SUM(cl.quantity) AS total_quantity
-                        FROM cards c
-                        JOIN sets s ON c.set_id = s.id 
-                        LEFT JOIN card_listings cl ON c.id = cl.card_id
-                        WHERE c.set_id = ? AND c.id != ?
-                        GROUP BY c.id
-                        ORDER BY RAND() LIMIT 12";
-        try {
-          $stmt = $conn->prepare($recommend_query);
-          $stmt->execute([$card['set_id'], $id]);
-          $recommended_cards = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-          echo "Error: " . $e->getMessage();
-        }
-        ?>
         <div class="slideshow-container">
           <div class="slideshow-wrapper">
             <?php for ($i = 0; $i < 3; $i++): ?>
@@ -212,11 +254,11 @@ try {
                           <p class="product__rarity"><?php echo htmlspecialchars($rec_card['rarity']); ?></p>
                           <p class="product__card-number"><?php echo htmlspecialchars($rec_card['card_number']); ?></p>
                           <?php if ($rec_card['total_quantity'] > 0): ?>
-                            <p class="product__listing"><?php echo $rec_card['total_quantity']; ?> listings</p>
+                            <p class="product__listing"><?php echo $card['total_stores']; ?> listings from</p>
                             <p class="product__price">
-                              $<?php echo number_format($rec_card['max_price'], 2); ?>
+                              $<?php echo number_format($rec_card['market_price'], 2); ?>
                             </p>
-                            <p class="product__market-price">Market Price: $<?php echo number_format($rec_card['market_price'], 2); ?></p>
+                            <p class="product__market-price">Market Price: <span style="color: #07772D;">$<?php echo number_format($rec_card['avg_price'], 2); ?></span></p>
                           <?php else: ?>
                             <p class="product__listing">Out of Stock</p>
                           <?php endif; ?>
@@ -236,7 +278,7 @@ try {
         </div>
       </div>
     </div>
-
+    <script src="/public/js/sub_page.js"></script>
     <!-- Phần recommend giữ nguyên như cũ -->
     <?php
     include '../includes/footer.php';

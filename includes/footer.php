@@ -89,13 +89,14 @@
     <span>Disney Lorcana and its respective properties are © <b>Disney</b></span>
     <span>©2024 <b>Pokémon</b>. ©1995 - 2024 Nintendo/Creatures Inc./GAME FREAK inc. TM, ®Nintendo.</span>
     <span><b>Privacy Policy • Terms of Service • Website Data Collection • Do Not Sell or Share My Personal Information</b></span>
+    <br>
+    <span>© 2024 sunao. All Rights Reserved.</span>
   </div>
 </footer>
-<script src="/public/js/main.js"></script>
 <!-- END FOOTER -->
 <!-- ----------------------------------------------------------------------------- -->
 <!-- JAVASCRIPT -->
-<script src="/public/js/main.js"></script>
+<!-- <script src="/public/js/main.js"></script> -->
 <!-- JAVASCRIPT -->
 
 </body>

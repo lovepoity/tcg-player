@@ -6,7 +6,7 @@
 .sub__location{
   display: flex;
   font-size: 1.4rem;
-  padding: 0 30px;
+  padding: 10px 30px;
   margin-bottom: 15px;
 }
 .sub__location a{
@@ -37,6 +37,9 @@
   width: 100%;
   height: auto;
   border-radius: 8px;
+}
+.sub__banner--2{
+  margin-bottom: 20px;
 }
 .navbar__sub-page{
   background-color: white;
@@ -163,12 +166,12 @@
 .product {
   flex: 1 1 calc(25% - 20px);
   max-width: 380px;
-  max-height: 233px;
+  height: 233px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   border-radius: 8px;
   padding: 15px;
   background-color: white;
-  display: flex; /* Thêm dòng này */
+  display: flex; 
 }
 
 .product:hover {
@@ -177,7 +180,7 @@
 
 .product > a {
   display: flex;
-  width: 100%; /* Thêm dòng này */
+  width: 100%;
 }
 
 .product__img { 
@@ -224,7 +227,39 @@
   font-weight: 600;
 }
 
+/* ------------------------------------------------- */
+/* PAGINATION */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
 
+.pagination a {
+  color: #000;
+  font-size: 1.6rem;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin: 0 5px;
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+
+.pagination a:hover {
+  background-color: white;
+  border: 1px solid #D4D7E2;
+}
+
+.pagination a.active {
+  background-color: #0935DB;
+  color: white;
+  border-color: #0935DB;
+}
+.pagination a.active:hover{
+  opacity: 0.9;
+}
 
 /* Media Queries */
 @media (max-width: 768px) {

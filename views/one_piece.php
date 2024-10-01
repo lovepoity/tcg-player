@@ -5,15 +5,29 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// Thêm các biến phân trang
+$items_per_page = 24; // Số sản phẩm trên mỗi trang
+$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($current_page - 1) * $items_per_page;
+
+// Sửa đổi truy vấn SQL để hỗ trợ phân trang
 $query = "SELECT c.*, s.name AS set_name, 
-          MIN(cl.price) AS market_price,
-          MAX(cl.price) AS max_price,
-          SUM(cl.quantity) AS total_quantity
+          MIN(cl.price) AS min_price,
+          AVG(cl.price) AS avg_price,
+          COUNT(DISTINCT cl.store_id) AS total_stores
           FROM cards c
           JOIN sets s ON c.set_id = s.id 
           LEFT JOIN card_listings cl ON c.id = cl.card_id
-          WHERE c.id BETWEEN 1 AND 24  -- Đã thay đổi từ 24 thành 25
-          GROUP BY c.id";
+          GROUP BY c.id
+          LIMIT $offset, $items_per_page";
+
+// Thêm truy vấn để đếm tổng số sản phẩm
+$count_query = "SELECT COUNT(DISTINCT c.id) as total FROM cards c";
+$count_result = $conn->query($count_query);
+$total_items = $count_result->fetch(PDO::FETCH_ASSOC)['total'];
+
+$total_pages = ceil($total_items / $items_per_page);
+
 try {
   $stmt = $conn->prepare($query);
   $stmt->execute();
@@ -80,7 +94,7 @@ try {
     <p>Two Legends</p>
   </div>
   <!-- BANNER -->
-  <div class="sub__banner">
+  <div class="sub__banner sub__banner--1">
     <a href="#">
       <img src="/public/images/banner/sub-banner.webp" alt="">
     </a>
@@ -99,12 +113,12 @@ try {
             <p class="product__set"><?php echo htmlspecialchars($card['set_name']); ?></p>
             <p class="product__rarity"><?php echo htmlspecialchars($card['rarity']); ?></p>
             <p class="product__card-number"><?php echo htmlspecialchars($card['card_number']); ?></p>
-            <?php if ($card['total_quantity'] > 0): ?>
-              <p class="product__listing"><?php echo $card['total_quantity']; ?> listings</p>
+            <?php if ($card['total_stores'] > 0): ?>
+              <p class="product__listing"><?php echo $card['total_stores']; ?> listings from</p>
               <p class="product__price">
-                $<?php echo number_format($card['max_price'], 2); ?>
+                $<?php echo number_format($card['min_price'], 2); ?>
               </p>
-              <p class="product__market-price">Market Price: $<?php echo number_format($card['market_price'], 2); ?></p>
+              <p class="product__market-price">Market Price: <span style="color: #07772D;">$<?php echo number_format($card['avg_price'], 2); ?></span></p>
             <?php else: ?>
               <p class="product__listing">Out of Stock</p>
             <?php endif; ?>
@@ -113,12 +127,21 @@ try {
       </div>
     <?php endforeach; ?>
   </div>
-  <div class="sub__banner">
+  <!-- PAGINATION -->
+  <div class="pagination">
+    <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+      <a href="?page=<?php echo $i; ?>" <?php echo $i == $current_page ? 'class="active"' : ''; ?>><?php echo $i; ?></a>
+    <?php endfor; ?>
+  </div>
+  <!-- END PAGINATION -->
+  <!-- BANNER -->
+  <div class="sub__banner sub__banner--2">
     <a href="#">
       <img src="/public/images/banner/sub-banner.webp" alt="">
     </a>
   </div>
 </div>
+<script src="/public/js/sub_page.js"></script>
 <?php
 include '../includes/footer.php';
 ?>

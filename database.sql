@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 29, 2024 at 08:17 PM
+-- Generation Time: Oct 01, 2024 at 08:10 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -94,7 +94,8 @@ INSERT INTO `cards` (`id`, `name`, `image_filename`, `product_details`, `rarity`
 (21, 'Edward.Newgate', '21.jpg', 'Product Details\r\n[On Play] If your Leaders type includes \"Whitebeard Piratess\" and you have 2 or less Life cards, select all of your opponents Characters on their field. Until the end of your opponents next turn, none of the selected Characters can attack unless your opponent trashes 2 cards from their hand whenever they attack.', 'SR', 'OP08-043', 'Blue', 'Character', '10', '12000', 'The Four Emperors Whitebeard Pirates', 'Special', 'Hayaken-sarena', 1, '2024-09-26 01:11:54', '2024-09-27 09:26:08'),
 (22, 'Silvers Rayleigh', '22.jpg', '[On Play] Select up to 2 of your opponents Characters, and give 1 Character 3000 power and the other 2000 power until the end of your opponents next turn. Then, K.O. up to 1 of your opponents Characters with 3000 power or less.', 'SEC', 'OP08-118', 'Purple', 'Character', '8', '8000', 'Former Roger Pirates', 'Slash', 'AKIRA EGAWA', 1, '2024-09-26 01:11:54', '2024-09-27 09:25:53'),
 (23, 'Conquest of the Sea', '23.jpg', '[Main] DON!! 2 (You may return the specified number of DON!! cards from your field to your DON!! deck.): If your Leader has the [Animal Kingdom Pirates] or [Big Mom Pirates] type, K.O. up to 2 of your opponents Characters with a cost of 6 or less.', 'R', 'OP08-077', 'Purple', 'Event', '6', 'None', 'Animal Kingdom Pirates', 'None', 'None', 1, '2024-09-26 01:11:54', '2024-09-27 09:25:38'),
-(24, 'Hiking Bear', '24.jpg', '[DON!! x1] [Activate: Main] [Once Per Turn] Up to 1 of your [Animal] type Characters other than this Character gains +1000 power during this turn.', 'UC', 'OP08-010', 'Red', 'Character', '3', '3000', 'Animal Drum Kingdom', 'Wisdom', 'COGA', 1, '2024-09-26 01:11:54', '2024-09-27 09:25:17');
+(24, 'Hiking Bear', '24.jpg', '[DON!! x1] [Activate: Main] [Once Per Turn] Up to 1 of your [Animal] type Characters other than this Character gains +1000 power during this turn.', 'UC', 'OP08-010', 'Red', 'Character', '3', '3000', 'Animal Drum Kingdom', 'Wisdom', 'COGA', 1, '2024-09-26 01:11:54', '2024-09-29 19:12:01'),
+(26, 'Kirby', 'kirby-png.png', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 1, '2024-09-29 19:09:37', '2024-09-30 17:39:32');
 
 -- --------------------------------------------------------
 
@@ -120,7 +121,7 @@ CREATE TABLE `card_listings` (
 INSERT INTO `card_listings` (`id`, `card_id`, `listing_id`, `quantity`, `price`, `created_at`, `updated_at`, `store_id`) VALUES
 (217, 1, 1, 1, 50.00, '2024-09-29 17:23:43', '2024-09-29 17:53:09', 1),
 (218, 2, 1, 1, 17.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 1),
-(219, 3, 1, 1, 19.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 1),
+(219, 3, 1, 12, 19.95, '2024-09-29 17:23:43', '2024-09-30 17:39:09', 1),
 (220, 4, 1, 1, 9.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 1),
 (221, 5, 1, 1, 12.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 1),
 (222, 6, 1, 1, 7.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 1),
@@ -132,7 +133,7 @@ INSERT INTO `card_listings` (`id`, `card_id`, `listing_id`, `quantity`, `price`,
 (228, 12, 1, 1, 2.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 1),
 (229, 13, 1, 1, 2.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 1),
 (230, 14, 1, 1, 2.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 1),
-(231, 15, 1, 1, 2.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 1),
+(231, 15, 1, 3, 2.95, '2024-09-29 17:23:43', '2024-09-30 16:26:44', 1),
 (232, 16, 1, 1, 2.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 1),
 (233, 17, 1, 1, 19.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 1),
 (234, 19, 1, 1, 2.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 1),
@@ -143,7 +144,7 @@ INSERT INTO `card_listings` (`id`, `card_id`, `listing_id`, `quantity`, `price`,
 (239, 24, 1, 1, 2.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 1),
 (240, 1, 2, 1, 19.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 2),
 (241, 2, 2, 1, 17.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 2),
-(242, 3, 2, 1, 19.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 2),
+(242, 3, 2, 2, 30.00, '2024-09-29 17:23:43', '2024-09-30 17:40:21', 2),
 (243, 4, 2, 1, 9.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 2),
 (244, 5, 2, 1, 12.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 2),
 (245, 6, 2, 1, 7.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 2),
@@ -166,7 +167,7 @@ INSERT INTO `card_listings` (`id`, `card_id`, `listing_id`, `quantity`, `price`,
 (262, 24, 2, 1, 2.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 2),
 (263, 1, 3, 1, 19.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 3),
 (264, 2, 3, 1, 17.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 3),
-(265, 3, 3, 1, 19.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 3),
+(265, 3, 3, 1, 20.00, '2024-09-29 17:23:43', '2024-09-29 18:47:40', 3),
 (266, 4, 3, 1, 9.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 3),
 (267, 5, 3, 1, 12.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 3),
 (268, 6, 3, 1, 7.95, '2024-09-29 17:23:43', '2024-09-29 17:44:01', 3),
@@ -191,12 +192,38 @@ INSERT INTO `card_listings` (`id`, `card_id`, `listing_id`, `quantity`, `price`,
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `games`
+--
+
+CREATE TABLE `games` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `games`
+--
+
+INSERT INTO `games` (`id`, `name`, `created_at`, `updated_at`) VALUES
+(1, 'Magic: The Gathering', '2024-09-26 01:11:54', '2024-09-26 01:11:54'),
+(2, 'Yu-Gi-Oh!', '2024-09-26 01:11:54', '2024-09-26 01:11:54'),
+(3, 'Pokémon', '2024-09-26 01:11:54', '2024-09-26 01:11:54'),
+(4, 'Disney Lorcana', '2024-09-26 01:11:54', '2024-09-26 01:11:54'),
+(5, 'One Piece Card Game', '2024-09-26 01:11:54', '2024-09-26 01:11:54'),
+(6, 'Digimon', '2024-09-26 01:11:54', '2024-09-26 01:11:54'),
+(7, 'Flesh and Blood', '2024-09-26 01:11:54', '2024-09-26 01:11:54');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `listings`
 --
 
 CREATE TABLE `listings` (
   `id` int(11) NOT NULL,
-  `name` varchar(255) NOT NULL,
+  `store_id` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -205,10 +232,10 @@ CREATE TABLE `listings` (
 -- Dumping data for table `listings`
 --
 
-INSERT INTO `listings` (`id`, `name`, `created_at`, `updated_at`) VALUES
-(1, 'SYGO', '2024-09-28 04:00:00', '2024-09-28 04:00:00'),
-(2, 'Pro-PlayGames', '2024-09-28 04:01:00', '2024-09-28 04:01:00'),
-(3, 'NinjaFinds', '2024-09-28 04:02:00', '2024-09-28 04:02:00');
+INSERT INTO `listings` (`id`, `store_id`, `created_at`, `updated_at`) VALUES
+(1, 1, '2024-09-29 17:23:43', '2024-09-29 17:23:43'),
+(2, 2, '2024-09-29 17:23:43', '2024-09-29 17:23:43'),
+(3, 3, '2024-09-29 17:23:43', '2024-09-29 17:23:43');
 
 -- --------------------------------------------------------
 
@@ -218,16 +245,19 @@ INSERT INTO `listings` (`id`, `name`, `created_at`, `updated_at`) VALUES
 
 CREATE TABLE `sets` (
   `id` int(11) NOT NULL,
+  `game_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `release_date` date DEFAULT NULL
+  `release_date` date DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `sets`
 --
 
-INSERT INTO `sets` (`id`, `name`, `release_date`) VALUES
-(1, 'Two Legends', '2024-02-01');
+INSERT INTO `sets` (`id`, `game_id`, `name`, `release_date`, `created_at`, `updated_at`) VALUES
+(1, 5, 'Two Legends', '2024-02-01', '2024-09-26 01:11:54', '2024-09-26 01:11:54');
 
 -- --------------------------------------------------------
 
@@ -238,7 +268,6 @@ INSERT INTO `sets` (`id`, `name`, `release_date`) VALUES
 CREATE TABLE `stores` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -247,10 +276,10 @@ CREATE TABLE `stores` (
 -- Dumping data for table `stores`
 --
 
-INSERT INTO `stores` (`id`, `name`, `password`, `created_at`, `updated_at`) VALUES
-(1, 'SYGO', '$2y$10$V/UxlneiXoUW0fZ7u3X3yOYGuCZjRoS.TfZFzmjKfd6xdfZxD/iK6', '2024-09-29 17:36:44', '2024-09-29 17:39:58'),
-(2, 'Pro-PlayGames', '$2y$10$V/UxlneiXoUW0fZ7u3X3yOYGuCZjRoS.TfZFzmjKfd6xdfZxD/iK6', '2024-09-29 17:36:44', '2024-09-29 17:39:58'),
-(3, 'NinjaFinds', '$2y$10$V/UxlneiXoUW0fZ7u3X3yOYGuCZjRoS.TfZFzmjKfd6xdfZxD/iK6', '2024-09-29 17:36:44', '2024-09-29 17:39:58');
+INSERT INTO `stores` (`id`, `name`, `created_at`, `updated_at`) VALUES
+(1, 'Card Kingdom', '2024-09-29 17:23:43', '2024-09-29 17:23:43'),
+(2, 'TCGplayer', '2024-09-29 17:23:43', '2024-09-29 17:23:43'),
+(3, 'Channel Fireball', '2024-09-29 17:23:43', '2024-09-29 17:23:43');
 
 --
 -- Indexes for dumped tables
@@ -268,35 +297,42 @@ ALTER TABLE `admins`
 --
 ALTER TABLE `cards`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_set` (`set_id`);
+  ADD KEY `set_id` (`set_id`);
 
 --
 -- Indexes for table `card_listings`
 --
 ALTER TABLE `card_listings`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `card_listing_unique` (`card_id`,`listing_id`),
-  ADD KEY `fk_card_listings_listing` (`listing_id`),
-  ADD KEY `fk_store` (`store_id`);
+  ADD KEY `card_id` (`card_id`),
+  ADD KEY `listing_id` (`listing_id`),
+  ADD KEY `store_id` (`store_id`);
+
+--
+-- Indexes for table `games`
+--
+ALTER TABLE `games`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `listings`
 --
 ALTER TABLE `listings`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `store_id` (`store_id`);
 
 --
 -- Indexes for table `sets`
 --
 ALTER TABLE `sets`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `game_id` (`game_id`);
 
 --
 -- Indexes for table `stores`
 --
 ALTER TABLE `stores`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `name` (`name`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -312,13 +348,19 @@ ALTER TABLE `admins`
 -- AUTO_INCREMENT for table `cards`
 --
 ALTER TABLE `cards`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `card_listings`
 --
 ALTER TABLE `card_listings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=289;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=286;
+
+--
+-- AUTO_INCREMENT for table `games`
+--
+ALTER TABLE `games`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `listings`
@@ -346,15 +388,27 @@ ALTER TABLE `stores`
 -- Constraints for table `cards`
 --
 ALTER TABLE `cards`
-  ADD CONSTRAINT `fk_set` FOREIGN KEY (`set_id`) REFERENCES `sets` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `cards_ibfk_1` FOREIGN KEY (`set_id`) REFERENCES `sets` (`id`);
 
 --
 -- Constraints for table `card_listings`
 --
 ALTER TABLE `card_listings`
-  ADD CONSTRAINT `fk_card_listings_card` FOREIGN KEY (`card_id`) REFERENCES `cards` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_card_listings_listing` FOREIGN KEY (`listing_id`) REFERENCES `listings` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_store` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`);
+  ADD CONSTRAINT `card_listings_ibfk_1` FOREIGN KEY (`card_id`) REFERENCES `cards` (`id`),
+  ADD CONSTRAINT `card_listings_ibfk_2` FOREIGN KEY (`listing_id`) REFERENCES `listings` (`id`),
+  ADD CONSTRAINT `card_listings_ibfk_3` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`);
+
+--
+-- Constraints for table `listings`
+--
+ALTER TABLE `listings`
+  ADD CONSTRAINT `listings_ibfk_1` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`);
+
+--
+-- Constraints for table `sets`
+--
+ALTER TABLE `sets`
+  ADD CONSTRAINT `sets_ibfk_1` FOREIGN KEY (`game_id`) REFERENCES `games` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

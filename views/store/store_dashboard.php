@@ -189,11 +189,6 @@ $listings = $stmt->fetchAll(PDO::FETCH_ASSOC);
       }
       return true;
     }
-
-    // Hiển thị thông báo popup nếu có
-    <?php if ($message): ?>
-      alert("<?php echo addslashes($message); ?>");
-    <?php endif; ?>
   </script>
 </body>
 

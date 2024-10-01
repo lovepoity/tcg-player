@@ -190,6 +190,62 @@
 }
 /* END User Action */
 /* ----------------------------------------------------------------------------- */
+/* Listing */
+.card__detail-listing{
+  margin: 50px auto 0 auto;
+  width: 1600px;
+  padding: 20px 40px;
+}
+
+.listing__quantity{
+  font-size: 3.3rem;
+  font-weight: 700;
+}
+.listing__price{
+  font-size: 1.6rem;
+}
+.listing__store{
+  display: flex;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 15px;
+  margin: 15px 0;
+  background-color: white;
+}
+.listing__store-item{
+  width: 33%;
+}
+.listing__store-name{
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+.listing__store-info p{
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+.listing__store-info-price{
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #07772D;
+  margin: 5px 0;
+}
+.listing__store-info-shipping{
+  font-size: 1.2rem;
+}
+.listing__store-quantity{
+  display: flex;
+  align-items: center;
+  justify-content: right;
+}
+.listing__store-quantity select{
+  cursor: pointer;
+  width: 100px;
+  height: 30px;
+  border: 1px solid #D4D7E2;
+  border-radius: 5px;
+}
+/* END Listing */
+
 /* Recommend */
 .card__details-recommend{
   width: 100%;

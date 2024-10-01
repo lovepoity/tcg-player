@@ -6,7 +6,7 @@
   list-style: none;
   outline: none;
   text-decoration: none;
-  transition: all 0.1s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 html {
   box-sizing: border-box;

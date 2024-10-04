@@ -96,7 +96,7 @@
 <!-- END FOOTER -->
 <!-- ----------------------------------------------------------------------------- -->
 <!-- JAVASCRIPT -->
-<!-- <script src="/public/js/main.js"></script> -->
+<script src="/public/js/main.js" defer></script>
 <!-- JAVASCRIPT -->
 
 </body>

@@ -14,16 +14,22 @@ function formatNumber($number, $decimals = 2)
   return number_format($number, $decimals);
 }
 
-// Lấy thông tin card
-$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$query = "SELECT c.*, s.name AS set_name, 
-          MIN(cl.price) AS market_price,
-          MAX(cl.price) AS max_price,
-          AVG(cl.price) AS avg_price,
-          COUNT(DISTINCT cl.store_id) AS total_stores,
-          SUM(cl.quantity) AS total_quantity
+// Lấy id từ tham số URL
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+if ($id === 0) {
+  echo "Invalid card ID.";
+  include '../includes/footer.php';
+  exit;
+}
+
+// Lấy thông tin card, set và game
+$query = "SELECT c.*, s.name AS set_name, s.id AS set_id, g.id AS game_id, g.name AS game_name,
+          MIN(cl.price) AS market_price, AVG(cl.price) AS avg_price, MAX(cl.price) AS max_price,
+          COUNT(DISTINCT cl.store_id) AS total_stores, SUM(cl.quantity) AS total_quantity
           FROM cards c
           JOIN sets s ON c.set_id = s.id 
+          JOIN games g ON s.game_id = g.id
           LEFT JOIN card_listings cl ON c.id = cl.card_id
           WHERE c.id = ?
           GROUP BY c.id";
@@ -38,10 +44,11 @@ if (!$card) {
 }
 
 // Lấy danh sách các listing cho card này
-$listing_query = "SELECT cl.*, s.name as store_name
+$listing_query = "SELECT cl.*, s.name as store_name, cl.shipping as shipping_cost
                   FROM card_listings cl
                   JOIN stores s ON cl.store_id = s.id
                   WHERE cl.card_id = ?
+                  GROUP BY cl.store_id
                   ORDER BY cl.price DESC
                   LIMIT 5";
 $listing_stmt = $conn->prepare($listing_query);
@@ -62,6 +69,20 @@ $recommend_query = "SELECT c.*, s.name AS set_name,
 $stmt = $conn->prepare($recommend_query);
 $stmt->execute([$card['set_id'], $id]);
 $recommended_cards = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Thêm vào phần đầu file, sau các truy vấn hiện có
+$highest_price_query = "SELECT cl.*, s.name as store_name
+                        FROM card_listings cl
+                        JOIN stores s ON cl.store_id = s.id
+                        WHERE cl.card_id = ? AND cl.price = (
+                            SELECT MAX(price)
+                            FROM card_listings
+                            WHERE card_id = ?
+                        )
+                        LIMIT 1";
+$highest_price_stmt = $conn->prepare($highest_price_query);
+$highest_price_stmt->execute([$id, $id]);
+$highest_price_listing = $highest_price_stmt->fetch(PDO::FETCH_ASSOC);
 
 ?>
 <!-- HTML -->
@@ -100,9 +121,9 @@ $recommended_cards = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <div class="sub__location">
     <a href="#">All Categories</a>
     <i class="fa-solid fa-chevron-right"></i>
-    <a href="#">One Piece Card Game</a>
+    <a href="/views/card_all.php?game_id=<?php echo $card['game_id']; ?>"><?php echo htmlspecialchars($card['game_name']); ?></a>
     <i class="fa-solid fa-chevron-right"></i>
-    <a href="#">Two Legends</a>
+    <a href="/views/card_all.php?set_id=<?php echo $card['set_id']; ?>"><?php echo htmlspecialchars($card['set_name']); ?></a>
     <i class="fa-solid fa-chevron-right"></i>
     <p><?php echo htmlspecialchars($card['name']); ?></p>
   </div>
@@ -137,34 +158,44 @@ $recommended_cards = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <div class="detail-info__breakdown-item">
             <div class="details-info__spotlight">
               <p class="details-info__spotlight-title">Near Mint Foil</p>
-              <p class="details-info__spotlight-price">$<?php echo number_format($card['max_price'], 2); ?>
-                <span style="font-size: 1.2rem; font-weight: 400;">shipping: <a href="#">included</a></span>
-              </p>
-              <p class="details-info__spotlight-sold">Sold by <a href="#">Sunao</a></p>
-              <!-- QUANTITY -->
-              <div class="details-info__spotlight-btn">
-                <?php
-                $quantity = $card['total_quantity'];
-                ?>
-                <select name="quantity" id="quantity" <?php echo ($quantity === 0) ? 'disabled' : ''; ?>>
-                  <?php if ($quantity === 0): ?>
-                    <option value="0">0</option>
-                  <?php else: ?>
-                    <?php
-                    $max_quantity = min($quantity, 100); // Giới hạn tối đa 100 hoặc số lượng có sẵn
-                    for ($i = 1; $i <= $max_quantity; $i++):
-                    ?>
-                      <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
-                    <?php endfor; ?>
-                  <?php endif; ?>
-                </select>
-                <span style="font-weight: bold; text-decoration: underline; color: #0f0f0f;" class="product__listing">
-                  of <?php echo $quantity; ?>
-                </span>
-                <button <?php echo ($quantity === 0) ? 'disabled' : ''; ?>>
-                  <?php echo ($quantity === 0) ? 'Out of Stock' : 'Add to Cart'; ?>
-                </button>
-              </div>
+              <?php if ($highest_price_listing): ?>
+                <p class="details-info__spotlight-price">$<?php echo number_format($highest_price_listing['price'], 2); ?>
+                  <span style="font-size: 1.2rem; font-weight: 400;">shipping:
+                    <?php echo ($highest_price_listing['shipping'] > 0) ? '$' . number_format($highest_price_listing['shipping'], 2) : 'included'; ?>
+                  </span>
+                </p>
+                <p class="details-info__spotlight-sold">Sold by <a href="#"><?php echo htmlspecialchars($highest_price_listing['store_name']); ?></a></p>
+                <!-- QUANTITY -->
+                <div class="details-info__spotlight-btn">
+                  <?php
+                  $quantity = $highest_price_listing['quantity'];
+                  ?>
+                  <select name="quantity" id="quantity" <?php echo ($quantity === 0) ? 'disabled' : ''; ?>>
+                    <?php if ($quantity === 0): ?>
+                      <option value="0">0</option>
+                    <?php else: ?>
+                      <?php
+                      $max_quantity = min($quantity, 100); // Giới hạn tối đa 100 hoặc số lượng có sẵn
+                      for ($i = 1; $i <= $max_quantity; $i++):
+                      ?>
+                        <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+                      <?php endfor; ?>
+                    <?php endif; ?>
+                  </select>
+                  <span style="font-weight: bold; text-decoration: underline; color: #0f0f0f;" class="product__listing">
+                    of <?php echo $quantity; ?>
+                  </span>
+                  <button <?php echo ($quantity === 0) ? 'disabled' : ''; ?>>
+                    <?php echo ($quantity === 0) ? 'Out of Stock' : 'Add to Cart'; ?>
+                  </button>
+                </div>
+              <?php else: ?>
+                <p class="details-info__spotlight-price">Currently Unavailable</p>
+                <p class="details-info__spotlight-sold">No sellers available at this time</p>
+                <div class="details-info__spotlight-btn">
+                  <button disabled>Out of Stock</button>
+                </div>
+              <?php endif; ?>
               <!-- END QUANTITY -->
               <!-- PAYPAL -->
               <div class="details-info__paypal">
@@ -194,19 +225,30 @@ $recommended_cards = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="card__details-recommend">
       <!-- LISTING -->
       <div id="listing" class="card__detail-listing">
-        <div class="listing__quantity"><?php echo $card['total_stores']; ?> Listings</div>
-        <div class="listing__price">
-          As low as $<?php echo number_format($card['market_price'], 2); ?>
-        </div>
-        <?php
-        foreach ($listings as $listing):
-        ?>
+        <?php if ($card['total_stores'] > 0 && $card['market_price'] > 0): ?>
+          <div class="listing__quantity"><?php echo $card['total_stores']; ?> Listings</div>
+          <div class="listing__price">
+            As low as $<?php echo number_format($card['market_price'], 2); ?>
+          </div>
+        <?php else: ?>
+          <div class="listing__quantity">No Listings Available</div>
+          <div class="listing__price">
+            This card is currently out of stock
+          </div>
+        <?php endif; ?>
+        <?php foreach ($listings as $listing): ?>
           <div class="listing__store">
             <div class="listing__store-name listing__store-item"><?php echo htmlspecialchars($listing['store_name']); ?></div>
             <div class="listing__store-info listing__store-item">
               <p><?php echo htmlspecialchars($listing['condition'] ?? 'Near Mint Foil'); ?></p>
               <div class="listing__store-info-price">$<?php echo number_format($listing['price'], 2); ?></div>
-              <div class="listing__store-info-shipping">+ $<?php echo number_format($listing['shipping_cost'] ?? 0, 2); ?> Shipping</div>
+              <div class="listing__store-info-shipping">
+                <?php if ($listing['shipping_cost'] > 0): ?>
+                  + $<?php echo number_format($listing['shipping_cost'], 2); ?> Shipping
+                <?php else: ?>
+                  Free Shipping
+                <?php endif; ?>
+              </div>
             </div>
             <div class="listing__store-quantity listing__store-item">
               <select name="quantity" id="quantity_<?php echo $listing['id']; ?>" <?php echo ($listing['quantity'] === 0) ? 'disabled' : ''; ?>>

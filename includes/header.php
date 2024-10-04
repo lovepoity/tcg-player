@@ -1,3 +1,53 @@
+<?php
+// Kết nối đến cơ sở dữ liệu
+include __DIR__ . '/db_connect.php';
+
+// Kiểm tra bảng games
+$query_games = "SELECT * FROM games";
+$stmt_games = $conn->prepare($query_games);
+$stmt_games->execute();
+$games_result = $stmt_games->fetchAll(PDO::FETCH_ASSOC);
+
+// Kiểm tra bảng sets
+$query_sets = "SELECT * FROM sets";
+$stmt_sets = $conn->prepare($query_sets);
+$stmt_sets->execute();
+$sets_result = $stmt_sets->fetchAll(PDO::FETCH_ASSOC);
+
+// Tiếp tục với truy vấn chính
+$query = "SELECT g.id AS game_id, g.name AS game_name, s.id AS set_id, s.name AS set_name 
+          FROM games g 
+          LEFT JOIN sets s ON g.id = s.game_id 
+          ORDER BY g.id ASC, s.release_date ASC";
+try {
+  $stmt = $conn->prepare($query);
+  $stmt->execute();
+  $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+  die("Query failed: " . $e->getMessage());
+}
+
+// Tổ chức dữ liệu thành cấu trúc game và các bộ
+$games = [];
+foreach ($result as $row) {
+  if (!isset($games[$row['game_id']])) {
+    $games[$row['game_id']] = [
+      'name' => $row['game_name'],
+      'sets' => []
+    ];
+  }
+  if ($row['set_id']) {
+    $games[$row['game_id']]['sets'][] = [
+      'id' => $row['set_id'],
+      'name' => $row['set_name']
+    ];
+  }
+}
+
+// Đếm số lượng game
+$count = count($games);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -19,11 +69,10 @@
   <!-- CSS -->
   <link rel="stylesheet" href="/public/css/main.css">
   <link rel="stylesheet" href="/public/css/style.css">
-  <link rel="stylesheet" href="/public/css/sub_page.css">
+  <link rel="stylesheet" href="/public/css/card_all.css">
   <link rel="stylesheet" href="/public/css/card_detail.css">
   <!-- END CSS -->
   <!-- ----------------------------------------------------------------------------- -->
-
   <title>TCG Player</title>
 </head>
 
@@ -82,16 +131,72 @@
     <!-- NAVBAR -->
     <div class="header__navbar">
       <ul class="header__list">
-        <li>Magic <i class='bx bxs-down-arrow'></i></li>
-        <li>Yu-Gi-Oh! <i class='bx bxs-down-arrow'></i></li>
-        <li>Pokémon <i class='bx bxs-down-arrow'></i></li>
-        <li>Disney Lorcana <i class='bx bxs-down-arrow'></i></li>
-        <li>One Piece <i class='bx bxs-down-arrow'></i></li>
-        <li>Digimon <i class='bx bxs-down-arrow'></i></li>
-        <li>Fresh and Blood <i class='bx bxs-down-arrow'></i></li>
+        <?php foreach ($games as $game): ?>
+          <li>
+            <?php echo htmlspecialchars($game['name']); ?> <i class='bx bxs-down-arrow'></i>
+            <?php if (!empty($game['sets'])): ?>
+              <ul class="header__submenu">
+                <?php foreach ($game['sets'] as $set): ?>
+                  <li><a href="/views/card_all.php?set_id=<?php echo $set['id']; ?>"><?php echo htmlspecialchars($set['name']); ?></a></li>
+                <?php endforeach; ?>
+              </ul>
+            <?php endif; ?>
+          </li>
+        <?php endforeach; ?>
         <li>More <i class='bx bxs-down-arrow'></i></li>
-        <li>Subcribe to TCGplayer</li>
-
+        <li>Subscribe to TCGplayer</li>
       </ul>
     </div>
   </header>
+  <div id="overlay"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const menuItems = document.querySelectorAll('.header__list > li');
+      const overlay = document.getElementById('overlay');
+
+      menuItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const submenu = this.querySelector('.header__submenu');
+          if (submenu) {
+            // Đóng tất cả các submenu khác và xóa class active
+            menuItems.forEach(otherItem => {
+              if (otherItem !== this) {
+                otherItem.classList.remove('active');
+                const otherSubmenu = otherItem.querySelector('.header__submenu');
+                if (otherSubmenu) {
+                  otherSubmenu.style.display = 'none';
+                }
+              }
+            });
+
+            // Chuyển đổi hiển thị của submenu hiện tại và thêm/xóa class active
+            if (submenu.style.display === 'block') {
+              submenu.style.display = 'none';
+              this.classList.remove('active');
+              overlay.style.display = 'none';
+            } else {
+              submenu.style.display = 'block';
+              this.classList.add('active');
+              overlay.style.display = 'block';
+            }
+          }
+        });
+      });
+
+      // Đóng submenu và xóa class active khi click ra ngoài
+      overlay.addEventListener('click', function() {
+        menuItems.forEach(item => {
+          item.classList.remove('active');
+          const submenu = item.querySelector('.header__submenu');
+          if (submenu) {
+            submenu.style.display = 'none';
+          }
+        });
+        overlay.style.display = 'none';
+      });
+    });
+  </script>
+</body>
+
+</html>

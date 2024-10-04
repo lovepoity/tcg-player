@@ -12,7 +12,7 @@
   flex-direction: column;
   justify-content: center;
   text-align: left;
-  color: #fff;
+  color: var(--white-color);
   padding: 32px;
   box-sizing: border-box;
 }
@@ -29,7 +29,7 @@
 .container__banner h1 {
   font-size: 1.6rem;
   margin-bottom: 10px;
-  color: #3BC692;
+  color: var(--main-green-color);
   position: relative; 
   z-index: 2; 
 }
@@ -53,7 +53,7 @@
 .container__banner button {
   padding: 7px 16px;
   font-size: 1.6rem;
-  background-color: #3BC692;
+  background-color: var(--main-green-color);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -103,7 +103,7 @@
   gap: 10px;
 }
 .latest-title{
-  color:   #5F6D7A;
+  color: var(--gray-color);
   font-size: 1.6rem;
 }
 .latest-subtitle{
@@ -136,14 +136,14 @@
 }
 .latest-grid-item p{
   font-size: 1.2rem;
-  color:   #5F6D7A;
+  color: var(--gray-color);
 }
 .latest-grid-item button{
   cursor: pointer;
   width: 100%;
-  color: white;
+  color: var(--white-color);
   font-weight: 600;
-  background-color: #0935DB;
+  background-color: var(--blue-color);
   border-radius: 8px;
   height: 36px;
   font-size: 1.3rem;
@@ -177,7 +177,7 @@
 }
 .best-sellers-grid-item-content span{
   font-size: 1.2rem;
-  color: #5F6D7A;
+  color: var(--gray-color);
   font-weight: 500;
 }
 

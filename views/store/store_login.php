@@ -1,35 +1,28 @@
 <?php
 session_start();
-include '../../includes/db_connect.php';  // Sửa đường dẫn này
+require_once '../../includes/db_connect.php';
+require_once '../../includes/functions.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  $name = $_POST['name'];
+  $input_name = $_POST['name'];
   $password = $_POST['password'];
 
-  $query = "SELECT * FROM stores WHERE name = ?";
-  $stmt = $conn->prepare($query);
-  $stmt->execute([$name]);
-  $store = $stmt->fetch(PDO::FETCH_ASSOC);
+  try {
+    $query = "SELECT * FROM stores WHERE LOWER(REPLACE(name, ' ', '')) = LOWER(REPLACE(?, ' ', ''))";
+    $stmt = $conn->prepare($query);
+    $stmt->execute([preg_replace('/[^a-z0-9]/i', '', $input_name)]);
+    $store = $stmt->fetch(PDO::FETCH_ASSOC);
 
-  // Debug information
-  echo "Entered store name: " . htmlspecialchars($name) . "<br>";
-  echo "Entered password: " . $password . "<br>";
-
-  if ($store) {
-    echo "Store found. Stored password hash: " . $store['password'] . "<br>";
-    if (password_verify($password, $store['password'])) {
-      echo "Password verified successfully!<br>";
+    if ($store && password_verify($password, $store['password'])) {
       $_SESSION['store_id'] = $store['id'];
       $_SESSION['store_name'] = $store['name'];
-      header('Location: store_dashboard.php');
-      exit;
+      redirect('store_dashboard.php');
     } else {
-      echo "Password verification failed.<br>";
       $error = "Invalid store name or password";
     }
-  } else {
-    echo "Store not found.<br>";
-    $error = "Invalid store name or password";
+  } catch (PDOException $e) {
+    error_log($e->getMessage());
+    $error = "An error occurred. Please try again later.";
   }
 }
 ?>
@@ -40,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/public/images/favicon.ico">
   <title>Store Login</title>
 </head>
 

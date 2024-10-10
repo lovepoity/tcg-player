@@ -1,9 +1,10 @@
 <?php
 include '../includes/header.php';
+include '../includes/banners.php';
 include '../includes/db_connect.php';
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+include '../includes/card_queries.php';
+
+$subPageBanner = get_sub_page_banner();
 
 // Lấy game_id và set_id từ URL
 $game_id = isset($_GET['game_id']) ? intval($_GET['game_id']) : null;
@@ -14,86 +15,15 @@ $items_per_page = 24;
 $current_page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $offset = ($current_page - 1) * $items_per_page;
 
-// Chuẩn bị truy vấn SQL
-if ($set_id) {
-  $query = "SELECT c.*, s.name AS set_name, 
-              MIN(cl.price) AS min_price,
-              AVG(cl.price) AS avg_price,
-              COUNT(DISTINCT cl.store_id) AS total_stores
-              FROM cards c
-              JOIN sets s ON c.set_id = s.id 
-              LEFT JOIN card_listings cl ON c.id = cl.card_id
-              WHERE c.set_id = :set_id
-              GROUP BY c.id
-              LIMIT :offset, :items_per_page";
-  $count_query = "SELECT COUNT(*) as total FROM cards WHERE set_id = :set_id";
-} elseif ($game_id) {
-  $query = "SELECT c.*, s.name AS set_name, 
-              MIN(cl.price) AS min_price,
-              AVG(cl.price) AS avg_price,
-              COUNT(DISTINCT cl.store_id) AS total_stores
-              FROM cards c
-              JOIN sets s ON c.set_id = s.id 
-              LEFT JOIN card_listings cl ON c.id = cl.card_id
-              WHERE s.game_id = :game_id
-              GROUP BY c.id
-              LIMIT :offset, :items_per_page";
-  $count_query = "SELECT COUNT(*) as total FROM cards c JOIN sets s ON c.set_id = s.id WHERE s.game_id = :game_id";
-} else {
-  die("No game or set specified");
-}
+$total_items = get_total_cards($conn, $game_id, $set_id);
+$total_pages = ceil($total_items / $items_per_page);
 
-try {
-  // Thực hiện truy vấn đếm
-  $count_stmt = $conn->prepare($count_query);
-  if ($set_id) {
-    $count_stmt->bindParam(':set_id', $set_id, PDO::PARAM_INT);
-  } else {
-    $count_stmt->bindParam(':game_id', $game_id, PDO::PARAM_INT);
-  }
-  $count_stmt->execute();
-  $total_items = $count_stmt->fetch(PDO::FETCH_ASSOC)['total'];
+$cards = get_cards_for_page($conn, $game_id, $set_id, $offset, $items_per_page);
+$info = get_game_set_info($conn, $game_id, $set_id);
 
-  // Tính tổng số trang
-  $total_pages = ceil($total_items / $items_per_page);
-
-  // Thực hiện truy vấn chính
-  $stmt = $conn->prepare($query);
-  if ($set_id) {
-    $stmt->bindParam(':set_id', $set_id, PDO::PARAM_INT);
-  } else {
-    $stmt->bindParam(':game_id', $game_id, PDO::PARAM_INT);
-  }
-  $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-  $stmt->bindParam(':items_per_page', $items_per_page, PDO::PARAM_INT);
-  $stmt->execute();
-  $cards = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-  // Lấy thông tin về game và set (nếu có)
-  if ($set_id) {
-    $info_query = "SELECT s.name AS set_name, g.id AS game_id, g.name AS game_name 
-                       FROM sets s 
-                       JOIN games g ON s.game_id = g.id 
-                       WHERE s.id = :set_id";
-    $info_stmt = $conn->prepare($info_query);
-    $info_stmt->bindParam(':set_id', $set_id, PDO::PARAM_INT);
-  } else {
-    $info_query = "SELECT id AS game_id, name AS game_name FROM games WHERE id = :game_id";
-    $info_stmt = $conn->prepare($info_query);
-    $info_stmt->bindParam(':game_id', $game_id, PDO::PARAM_INT);
-  }
-  $info_stmt->execute();
-  $info = $info_stmt->fetch(PDO::FETCH_ASSOC);
-  $game_name = $info['game_name'];
-  $set_name = isset($info['set_name']) ? $info['set_name'] : null;
-  $game_id = $info['game_id'];
-} catch (PDOException $e) {
-  echo "Database error: " . $e->getMessage();
-  $cards = [];
-  $game_name = "Error";
-  $set_name = null;
-  $total_pages = 0;
-}
+$game_name = $info['game_name'];
+$set_name = isset($info['set_name']) ? $info['set_name'] : null;
+$game_id = $info['game_id'];
 ?>
 
 <div class="sub__page">
@@ -157,11 +87,15 @@ try {
     <?php endif; ?>
   </div>
   <!-- BANNER -->
-  <div class="sub__banner sub__banner--1">
-    <a href="#">
-      <img src="/public/images/banner/sub-banner.webp" alt="">
-    </a>
-  </div>
+  <?php if ($subPageBanner): ?>
+    <!-- BANNER -->
+    <div class="sub__banner sub__banner--1">
+      <a href="<?php echo htmlspecialchars($subPageBanner['url']); ?>">
+        <img src="<?php echo htmlspecialchars('/public/images/banner/' . $subPageBanner['banner_img']); ?>" alt="<?php echo htmlspecialchars($subPageBanner['title']); ?>">
+      </a>
+    </div>
+    <!-- END BANNER -->
+  <?php endif; ?>
   <!-- END BANNER -->
   <!-- PRODUCT -->
   <div class="product-grid">
@@ -203,13 +137,16 @@ try {
   <!-- END PAGINATION -->
 
   <!-- BANNER -->
-  <div class="sub__banner sub__banner--2">
-    <a href="#">
-      <img src="/public/images/banner/sub-banner.webp" alt="">
-    </a>
-  </div>
+  <?php if ($subPageBanner): ?>
+    <!-- BANNER -->
+    <div class="sub__banner sub__banner--2">
+      <a href="<?php echo htmlspecialchars($subPageBanner['url']); ?>">
+        <img src="<?php echo htmlspecialchars('/public/images/banner/' . $subPageBanner['banner_img']); ?>" alt="<?php echo htmlspecialchars($subPageBanner['title']); ?>">
+      </a>
+    </div>
+    <!-- END BANNER -->
+  <?php endif; ?>
 </div>
-<script src="/public/js/sub_page.js"></script>
 <!-- Thêm vào cuối file, trước </body> -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>

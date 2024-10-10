@@ -1,0 +1,117 @@
+.settings-nav ul {
+  padding: 0;
+  display: flex;
+  margin: 10px 0 50px 0;
+}
+
+.settings-nav a {
+  padding: 10px 50px;
+  font-weight: bold;
+  font-size: 1.4rem;
+  border-right: 1px solid var(--border-color);
+}
+
+.settings-nav a.active {
+  border-top: 3px solid var(--blue-color);
+}
+
+.setting-form {
+  border-top: 1px solid var(--border-color);
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.current-image {
+  margin-bottom: 10px;
+}
+
+.btn {
+  margin-top: 10px;
+}
+
+#banner-content {
+  margin-top: 20px;
+}
+/* ---------------------------------------------------------------- */
+/* BANNER */
+.content__detail h2{
+  margin-bottom: 10px;
+}
+.banner-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: var(--white-color);
+  overflow: hidden;
+  text-align: center;
+}
+
+.banner-table th{
+  padding:  0 0 10px 0;
+  font-weight: 600;
+  font-size: 1.4rem;
+  text-transform: uppercase;
+}
+.banner-table td{
+  font-size: 1.2rem;
+  line-height: 2.2;
+}
+
+.banner-table th,
+.banner-table td {
+  word-break: break-all;
+  white-space: normal;
+  text-align: center;
+  border-bottom: 1px solid var(--border-color);
+}
+.banner-table td:first-child{
+  width: 20px;
+}
+.banner-table td:nth-child(2){
+  width: 70px;
+}
+
+.banner-table td:nth-child(3){
+  width: 250px;
+}
+.banner-table td:nth-child(5){
+  width: 250px;
+}
+.banner-table td:nth-child(6){
+  width: 150px;
+}
+.banner-table td:nth-child(7){
+  width: 300px;
+}
+.banner-table td:last-child{
+  width: 60px;
+}
+
+
+.banner-row:first-child {
+  margin-bottom: 100px;
+}
+.banner-table tr:last-child td {
+  border-bottom: none;
+}
+.banner-table img{
+  width: 100%;
+  vertical-align: middle;
+  padding: 20px 0;
+}
+.banner-table tbody tr:hover {
+  background-color: rgba(26, 101, 165, 0.05);
+}
+.form-group label{
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--gray-color);
+}
+.form-group input[type="text"]{
+  flex: 1;
+  padding: 5px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 1.4rem;
+  height: 38px;
+}

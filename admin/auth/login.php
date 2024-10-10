@@ -70,7 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {
           } else {
             document.getElementById('error-message').textContent = response.error;
             document.getElementById('error-message').style.display = 'block';
-            // Clear username and password fields
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
           }

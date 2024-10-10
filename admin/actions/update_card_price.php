@@ -9,7 +9,7 @@ $shipping = isset($_POST['shipping']) ? floatval($_POST['shipping']) : null;
 
 if (!$card_id || !$store_id || $price === null || $quantity === null || $shipping === null) {
   http_response_code(400);
-  echo json_encode(['error' => 'Tham số không hợp lệ']);
+  echo json_encode(['error' => 'Invalid parameters']);
   exit;
 }
 
@@ -51,5 +51,5 @@ try {
 } catch (Exception $e) {
   $conn->rollBack();
   http_response_code(500);
-  echo json_encode(['error' => 'Lỗi khi cập nhật thông tin: ' . $e->getMessage()]);
+  echo json_encode(['error' => 'Error updating card price: ' . $e->getMessage()]);
 }

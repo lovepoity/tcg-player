@@ -4,7 +4,6 @@
 }
 .container__banner{
   position: relative; 
-  background-image: url(/public/images/banner/banner.webp);
   background-size: cover;
   background-position: center;
   height: 296px;
@@ -87,7 +86,7 @@
 }
 .container__content{
   margin: 20px auto;
-  max-width: 1300px;
+  max-width: 1500px;
 }
 .container__content-item img{
   width: 100%;
@@ -181,6 +180,8 @@
   font-weight: 500;
 }
 
+
+/* --------------------------------------------------------- */
 /* Tablet */
 @media (max-width: 1024px) {
   .container__content {

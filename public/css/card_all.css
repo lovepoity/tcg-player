@@ -159,7 +159,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 20px; 
-  padding: 15px 32px 32px 32px;
+  padding: 20px 32px;
   justify-content: center;
 }
 
@@ -167,10 +167,11 @@
   flex: 1 1 calc(25% - 20px);
   max-width: 380px;
   height: 233px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
   border-radius: 8px;
   padding: 15px;
   background-color: var(--white-color);
+  transition: all 0.1s ease;
   display: flex; 
 }
 

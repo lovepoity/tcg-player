@@ -1,39 +1,40 @@
 <?php
 include 'includes/header.php';
+include 'includes/banners.php';
+
+$mainBanner = get_main_banner();
+$subBanners = get_sub_banners();
 ?>
 <!-- CONTAINER -->
 <div class="container">
   <!-- BANNER -->
-  <div class="container__banner">
-    <div class="banner-overlay"></div>
-    <h1>MAGIC : THE GATHERING</h1>
-    <p>Duskmourn: House of Horror</p>
-    <span>Releases Sept. 27th</span>
-    <button>Preorder Now</button>
-  </div>
+  <?php if ($mainBanner): ?>
+    <div class="container__banner" style="background-image: url(<?php echo htmlspecialchars('/public/images/banner/' . $mainBanner['banner_img']); ?>);">
+      <div class="banner-overlay"></div>
+      <h1><?php echo htmlspecialchars($mainBanner['title']); ?></h1>
+      <p><?php echo htmlspecialchars($mainBanner['subtitle']); ?></p>
+      <span><?php echo htmlspecialchars($mainBanner['release_date']); ?></span>
+      <button onclick="window.location.href='<?php echo htmlspecialchars($mainBanner['url']); ?>'">Preorder Now</button>
+    </div>
+  <?php endif; ?>
   <!-- SIGNUP -->
   <div class="container__signup">
     <a href="#"><i class="fa-regular fa-envelope"></i> Sign Up for Emails <i class='bx bxs-right-arrow'></i></a>
   </div>
   <!-- CONTENT -->
   <div class="container__content">
-    <a href="#" class="container__content-item">
-      <img src="/public/images/banner/1.webp" alt="">
-    </a>
-    <div class="container__content-grid">
-      <a href="#" class="container__content-item">
-        <img src="/public/images/banner/2.webp" alt="">
+    <?php if (!empty($subBanners)): ?>
+      <a href="<?php echo htmlspecialchars($subBanners[0]['url']); ?>" class="container__content-item">
+        <img src="<?php echo htmlspecialchars('/public/images/banner/' . $subBanners[0]['banner_img']); ?>" alt="<?php echo htmlspecialchars($subBanners[0]['title']); ?>">
       </a>
-      <a href="#" class="container__content-item">
-        <img src="/public/images/banner/3.webp" alt="">
-      </a>
-      <a href="#" class="container__content-item">
-        <img src="/public/images/banner/4.webp" alt="">
-      </a>
-      <a href="#" class="container__content-item">
-        <img src="/public/images/banner/5.webp" alt="">
-      </a>
-    </div>
+      <div class="container__content-grid">
+        <?php for ($i = 1; $i < count($subBanners); $i++): ?>
+          <a href="<?php echo htmlspecialchars($subBanners[$i]['url']); ?>" class="container__content-item">
+            <img src="<?php echo htmlspecialchars('/public/images/banner/' . $subBanners[$i]['banner_img']); ?>" alt="<?php echo htmlspecialchars($subBanners[$i]['title']); ?>">
+          </a>
+        <?php endfor; ?>
+      </div>
+    <?php endif; ?>
     <!-- LATEST SETS -->
     <h1 class="latest-title">Latest Sets</h1>
     <h2 class="latest-subtitle">New sets from your favorite games:</h2>
@@ -156,8 +157,6 @@ include 'includes/header.php';
 </div>
 <!-- END CONTENT -->
 </div>
-
-
 <?php
 include 'includes/footer.php';
 ?>

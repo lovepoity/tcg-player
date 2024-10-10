@@ -1,6 +1,7 @@
 <?php
 include '../includes/header.php';
 include '../includes/db_connect.php';
+include '../includes/card_queries.php';
 
 // Hàm helper để hiển thị HTML an toàn
 function e($string)
@@ -24,18 +25,7 @@ if ($id === 0) {
 }
 
 // Lấy thông tin card, set và game
-$query = "SELECT c.*, s.name AS set_name, s.id AS set_id, g.id AS game_id, g.name AS game_name,
-          MIN(cl.price) AS market_price, AVG(cl.price) AS avg_price, MAX(cl.price) AS max_price,
-          COUNT(DISTINCT cl.store_id) AS total_stores, SUM(cl.quantity) AS total_quantity
-          FROM cards c
-          JOIN sets s ON c.set_id = s.id 
-          JOIN games g ON s.game_id = g.id
-          LEFT JOIN card_listings cl ON c.id = cl.card_id
-          WHERE c.id = ?
-          GROUP BY c.id";
-$stmt = $conn->prepare($query);
-$stmt->execute([$id]);
-$card = $stmt->fetch(PDO::FETCH_ASSOC);
+$card = get_card_details($conn, $id);
 
 if (!$card) {
   echo "Card not found.";
@@ -44,45 +34,13 @@ if (!$card) {
 }
 
 // Lấy danh sách các listing cho card này
-$listing_query = "SELECT cl.*, s.name as store_name, cl.shipping as shipping_cost
-                  FROM card_listings cl
-                  JOIN stores s ON cl.store_id = s.id
-                  WHERE cl.card_id = ?
-                  GROUP BY cl.store_id
-                  ORDER BY cl.price DESC
-                  LIMIT 5";
-$listing_stmt = $conn->prepare($listing_query);
-$listing_stmt->execute([$id]);
-$listings = $listing_stmt->fetchAll(PDO::FETCH_ASSOC);
+$listings = get_card_listings($conn, $id, 5);
 
 // Lấy 12 sản phẩm ngẫu nhiên từ cùng set, ngoại trừ sản phẩm hiện tại
-$recommend_query = "SELECT c.*, s.name AS set_name, 
-                    MIN(cl.price) AS market_price,
-                    AVG(cl.price) AS avg_price,
-                    SUM(cl.quantity) AS total_quantity
-                    FROM cards c
-                    JOIN sets s ON c.set_id = s.id 
-                    LEFT JOIN card_listings cl ON c.id = cl.card_id
-                    WHERE c.set_id = ? AND c.id != ?
-                    GROUP BY c.id
-                    ORDER BY RAND() LIMIT 12";
-$stmt = $conn->prepare($recommend_query);
-$stmt->execute([$card['set_id'], $id]);
-$recommended_cards = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$recommended_cards = get_recommended_cards($conn, $card['set_id'], $id, 12);
 
-// Thêm vào phần đầu file, sau các truy vấn hiện có
-$highest_price_query = "SELECT cl.*, s.name as store_name
-                        FROM card_listings cl
-                        JOIN stores s ON cl.store_id = s.id
-                        WHERE cl.card_id = ? AND cl.price = (
-                            SELECT MAX(price)
-                            FROM card_listings
-                            WHERE card_id = ?
-                        )
-                        LIMIT 1";
-$highest_price_stmt = $conn->prepare($highest_price_query);
-$highest_price_stmt->execute([$id, $id]);
-$highest_price_listing = $highest_price_stmt->fetch(PDO::FETCH_ASSOC);
+// Lấy thông tin về listing có giá cao nhất
+$highest_price_listing = get_highest_price_listing($conn, $id);
 
 ?>
 <!-- HTML -->
@@ -110,7 +68,7 @@ $highest_price_listing = $highest_price_stmt->fetch(PDO::FETCH_ASSOC);
     <div class="listing--price">
       <?php if ($card['total_stores'] > 0): ?>
         <p style="font-weight: bold; text-decoration: underline;" class="product__listing"><?php echo $card['total_stores']; ?> Listings</p>
-        <p>As low as $<?php echo number_format($card['market_price'], 2); ?></p>
+        <p>As low as $<?php echo formatNumber($card['market_price'], 2); ?></p>
       <?php else: ?>
         <p style="font-weight: bold; text-decoration: underline;" class="product__listing">Out of Stock</p>
       <?php endif; ?>
@@ -121,11 +79,11 @@ $highest_price_listing = $highest_price_stmt->fetch(PDO::FETCH_ASSOC);
   <div class="sub__location">
     <a href="#">All Categories</a>
     <i class="fa-solid fa-chevron-right"></i>
-    <a href="/views/card_all.php?game_id=<?php echo $card['game_id']; ?>"><?php echo htmlspecialchars($card['game_name']); ?></a>
+    <a href="/views/card_all.php?game_id=<?php echo $card['game_id']; ?>"><?php echo e($card['game_name']); ?></a>
     <i class="fa-solid fa-chevron-right"></i>
-    <a href="/views/card_all.php?set_id=<?php echo $card['set_id']; ?>"><?php echo htmlspecialchars($card['set_name']); ?></a>
+    <a href="/views/card_all.php?set_id=<?php echo $card['set_id']; ?>"><?php echo e($card['set_name']); ?></a>
     <i class="fa-solid fa-chevron-right"></i>
-    <p><?php echo htmlspecialchars($card['name']); ?></p>
+    <p><?php echo e($card['name']); ?></p>
   </div>
   <!-- END LOCATION -->
   <!-- CARD DETAILS -->
@@ -134,37 +92,37 @@ $highest_price_listing = $highest_price_stmt->fetch(PDO::FETCH_ASSOC);
       <!-- DETAIL INFO LEFT -->
       <div class="details-info__left">
         <div class="details-info__image">
-          <img src="/public/images/product/<?php echo htmlspecialchars($card['image_filename']); ?>" alt="<?php echo htmlspecialchars($card['name']); ?>">
+          <img src="/public/images/product/<?php echo e($card['image_filename']); ?>" alt="<?php echo e($card['name']); ?>">
         </div>
       </div>
       <!-- DETAIL INFO RIGHT -->
       <div class="details-info__right">
-        <h1><?php echo htmlspecialchars($card['name']); ?> - <?php echo htmlspecialchars($card['set_name']); ?></h1>
-        <p class="details-info__set"><?php echo htmlspecialchars($card['set_name']); ?></p>
+        <h1><?php echo e($card['name']); ?> - <?php echo e($card['set_name']); ?></h1>
+        <p class="details-info__set"><?php echo e($card['set_name']); ?></p>
         <!-- DETAIL INFO -->
         <div class="detail-info__breakdown">
           <div class="detail-info__breakdown-item">
-            <p class="details-info__all"><b>Product Details</b><br><?php echo htmlspecialchars($card['product_details']); ?></p>
-            <p class="details-info__all"><b>Rarity: </b><?php echo htmlspecialchars($card['rarity']); ?></p>
-            <p class="details-info__all"><b>Card Number: </b><?php echo htmlspecialchars($card['card_number']); ?></p>
-            <p class="details-info__all"><b>Color: </b><?php echo htmlspecialchars($card['color']); ?></p>
-            <p class="details-info__all"><b>Card Type: </b><?php echo htmlspecialchars($card['card_type']); ?></p>
-            <p class="details-info__all"><b>Cost: </b><?php echo htmlspecialchars($card['cost']); ?></p>
-            <p class="details-info__all"><b>Power: </b><?php echo htmlspecialchars($card['power']); ?></p>
-            <p class="details-info__all"><b>Subtype(s): </b><?php echo htmlspecialchars($card['subtype']); ?></p>
-            <p class="details-info__all"><b>Attribute: </b><?php echo htmlspecialchars($card['attribute']); ?></p>
-            <p class="details-info__all"><b>Artist: </b><a href="#"><?php echo htmlspecialchars($card['artist']); ?></a></p>
+            <p class="details-info__all"><b>Product Details</b><br><?php echo e($card['product_details']); ?></p>
+            <p class="details-info__all"><b>Rarity: </b><?php echo e($card['rarity']); ?></p>
+            <p class="details-info__all"><b>Card Number: </b><?php echo e($card['card_number']); ?></p>
+            <p class="details-info__all"><b>Color: </b><?php echo e($card['color']); ?></p>
+            <p class="details-info__all"><b>Card Type: </b><?php echo e($card['card_type']); ?></p>
+            <p class="details-info__all"><b>Cost: </b><?php echo e($card['cost']); ?></p>
+            <p class="details-info__all"><b>Power: </b><?php echo e($card['power']); ?></p>
+            <p class="details-info__all"><b>Subtype(s): </b><?php echo e($card['subtype']); ?></p>
+            <p class="details-info__all"><b>Attribute: </b><?php echo e($card['attribute']); ?></p>
+            <p class="details-info__all"><b>Artist: </b><a href="#"><?php echo e($card['artist']); ?></a></p>
           </div>
           <div class="detail-info__breakdown-item">
             <div class="details-info__spotlight">
               <p class="details-info__spotlight-title">Near Mint Foil</p>
               <?php if ($highest_price_listing): ?>
-                <p class="details-info__spotlight-price">$<?php echo number_format($highest_price_listing['price'], 2); ?>
+                <p class="details-info__spotlight-price">$<?php echo formatNumber($highest_price_listing['price'], 2); ?>
                   <span style="font-size: 1.2rem; font-weight: 400;">shipping:
-                    <?php echo ($highest_price_listing['shipping'] > 0) ? '$' . number_format($highest_price_listing['shipping'], 2) : 'included'; ?>
+                    <?php echo ($highest_price_listing['shipping'] > 0) ? '$' . formatNumber($highest_price_listing['shipping'], 2) : 'included'; ?>
                   </span>
                 </p>
-                <p class="details-info__spotlight-sold">Sold by <a href="#"><?php echo htmlspecialchars($highest_price_listing['store_name']); ?></a></p>
+                <p class="details-info__spotlight-sold">Sold by <a href="#"><?php echo e($highest_price_listing['store_name']); ?></a></p>
                 <!-- QUANTITY -->
                 <div class="details-info__spotlight-btn">
                   <?php
@@ -207,7 +165,7 @@ $highest_price_listing = $highest_price_stmt->fetch(PDO::FETCH_ASSOC);
             <!-- ALL LISTING -->
             <div class="details-info__all-listing">
               <a class="details-info__all-listing-link" href="#listing">View <?php echo $card['total_stores']; ?> Other Listings</a>
-              <p class="details-info__all-listing-price">As low as $<?php echo number_format($card['market_price'], 2); ?></p>
+              <p class="details-info__all-listing-price">As low as $<?php echo formatNumber($card['market_price'], 2); ?></p>
             </div>
             <!-- END ALL LISTING -->
             <!-- USER ACTION -->
@@ -228,7 +186,7 @@ $highest_price_listing = $highest_price_stmt->fetch(PDO::FETCH_ASSOC);
         <?php if ($card['total_stores'] > 0 && $card['market_price'] > 0): ?>
           <div class="listing__quantity"><?php echo $card['total_stores']; ?> Listings</div>
           <div class="listing__price">
-            As low as $<?php echo number_format($card['market_price'], 2); ?>
+            As low as $<?php echo formatNumber($card['market_price'], 2); ?>
           </div>
         <?php else: ?>
           <div class="listing__quantity">No Listings Available</div>
@@ -238,13 +196,13 @@ $highest_price_listing = $highest_price_stmt->fetch(PDO::FETCH_ASSOC);
         <?php endif; ?>
         <?php foreach ($listings as $listing): ?>
           <div class="listing__store">
-            <div class="listing__store-name listing__store-item"><?php echo htmlspecialchars($listing['store_name']); ?></div>
+            <div class="listing__store-name listing__store-item"><?php echo e($listing['store_name']); ?></div>
             <div class="listing__store-info listing__store-item">
-              <p><?php echo htmlspecialchars($listing['condition'] ?? 'Near Mint Foil'); ?></p>
-              <div class="listing__store-info-price">$<?php echo number_format($listing['price'], 2); ?></div>
+              <p><?php echo e($listing['condition'] ?? 'Near Mint Foil'); ?></p>
+              <div class="listing__store-info-price">$<?php echo formatNumber($listing['price'], 2); ?></div>
               <div class="listing__store-info-shipping">
                 <?php if ($listing['shipping_cost'] > 0): ?>
-                  + $<?php echo number_format($listing['shipping_cost'], 2); ?> Shipping
+                  + $<?php echo formatNumber($listing['shipping_cost'], 2); ?> Shipping
                 <?php else: ?>
                   Free Shipping
                 <?php endif; ?>
@@ -288,19 +246,19 @@ $highest_price_listing = $highest_price_stmt->fetch(PDO::FETCH_ASSOC);
                     <div class="product">
                       <a href="/views/card_details.php?id=<?php echo $rec_card['id']; ?>">
                         <div class="product__img">
-                          <img loading="lazy" src="/public/images/product/<?php echo htmlspecialchars($rec_card['image_filename']); ?>" alt="<?php echo htmlspecialchars($rec_card['name']); ?>">
+                          <img loading="lazy" src="/public/images/product/<?php echo e($rec_card['image_filename']); ?>" alt="<?php echo e($rec_card['name']); ?>">
                         </div>
                         <div class="product__info">
-                          <p class="product__name"><?php echo htmlspecialchars($rec_card['name']); ?></p>
-                          <p class="product__set"><?php echo htmlspecialchars($rec_card['set_name']); ?></p>
-                          <p class="product__rarity"><?php echo htmlspecialchars($rec_card['rarity']); ?></p>
-                          <p class="product__card-number"><?php echo htmlspecialchars($rec_card['card_number']); ?></p>
+                          <p class="product__name"><?php echo e($rec_card['name']); ?></p>
+                          <p class="product__set"><?php echo e($rec_card['set_name']); ?></p>
+                          <p class="product__rarity"><?php echo e($rec_card['rarity']); ?></p>
+                          <p class="product__card-number"><?php echo e($rec_card['card_number']); ?></p>
                           <?php if ($rec_card['total_quantity'] > 0): ?>
                             <p class="product__listing"><?php echo $card['total_stores']; ?> listings from</p>
                             <p class="product__price">
-                              $<?php echo number_format($rec_card['market_price'], 2); ?>
+                              $<?php echo formatNumber($rec_card['market_price'], 2); ?>
                             </p>
-                            <p class="product__market-price">Market Price: <span style="color: #07772D;">$<?php echo number_format($rec_card['avg_price'], 2); ?></span></p>
+                            <p class="product__market-price">Market Price: <span style="color: #07772D;">$<?php echo formatNumber($rec_card['avg_price'], 2); ?></span></p>
                           <?php else: ?>
                             <p class="product__listing">Out of Stock</p>
                           <?php endif; ?>

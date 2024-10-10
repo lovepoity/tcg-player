@@ -6,7 +6,7 @@ $game_id = isset($_GET['game_id']) ? intval($_GET['game_id']) : null;
 $set_id = isset($_GET['set_id']) ? intval($_GET['set_id']) : null;
 
 if (empty($stores) || !$game_id || !$set_id) {
-  echo json_encode(['error' => 'Tham số không hợp lệ']);
+  echo json_encode(['error' => 'Invalid parameters']);
   exit;
 }
 

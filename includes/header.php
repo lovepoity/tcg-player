@@ -2,6 +2,18 @@
 // Kết nối đến cơ sở dữ liệu
 include __DIR__ . '/db_connect.php';
 
+// Fetch website settings
+$sql = "SELECT title, logo, favicon, footer_desc FROM website_info WHERE id = 1";
+$stmt = $conn->prepare($sql);
+$stmt->execute();
+$website_info = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// Set default values if not found
+$logo = $website_info['logo'] ?? 'logo.png';
+$favicon = $website_info['favicon'] ?? 'favicon.ico';
+$title = $website_info['title'] ?? 'TCG Player';
+$footer_desc = $website_info['footer_desc'] ?? '';
+
 // Kiểm tra bảng games
 $query_games = "SELECT * FROM games";
 $stmt_games = $conn->prepare($query_games);
@@ -14,11 +26,11 @@ $stmt_sets = $conn->prepare($query_sets);
 $stmt_sets->execute();
 $sets_result = $stmt_sets->fetchAll(PDO::FETCH_ASSOC);
 
-// Tiếp tục với truy vấn chính
+// Thay đổi truy vấn chính để sắp xếp games theo id và sets theo id giảm dần
 $query = "SELECT g.id AS game_id, g.name AS game_name, s.id AS set_id, s.name AS set_name 
           FROM games g 
           LEFT JOIN sets s ON g.id = s.game_id 
-          ORDER BY g.id ASC, s.release_date ASC";
+          ORDER BY g.id ASC, s.id DESC";
 try {
   $stmt = $conn->prepare($query);
   $stmt->execute();
@@ -46,6 +58,31 @@ foreach ($result as $row) {
 
 // Đếm số lượng game
 $count = count($games);
+
+// Truy vấn để lấy tất cả các trò chơi
+$query_all_games = "SELECT * FROM games ORDER BY id ASC";
+$stmt_all_games = $conn->prepare($query_all_games);
+$stmt_all_games->execute();
+$all_games = $stmt_all_games->fetchAll(PDO::FETCH_ASSOC);
+
+// Thêm truy vấn để lấy set mới nhất cho mỗi game
+$query_latest_sets = "SELECT s.id, s.name, s.image, s.game_id 
+                      FROM sets s
+                      INNER JOIN (
+                          SELECT game_id, MAX(id) as max_id
+                          FROM sets
+                          GROUP BY game_id
+                      ) latest ON s.game_id = latest.game_id AND s.id = latest.max_id";
+$stmt_latest_sets = $conn->prepare($query_latest_sets);
+$stmt_latest_sets->execute();
+$latest_sets = $stmt_latest_sets->fetchAll(PDO::FETCH_ASSOC);
+
+// Tạo một mảng với game_id là khóa
+$latest_sets_by_game = array();
+foreach ($latest_sets as $set) {
+  $latest_sets_by_game[$set['game_id']] = $set;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -62,18 +99,21 @@ $count = count($games);
   <!-- FONTAWESOME -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-  <link rel="icon" href="/public/images/favicon.ico">
+  <link rel="icon" href="/public/images/<?php echo htmlspecialchars($favicon); ?>">
 
   <!-- END FONTAWESOME -->
   <!-- ----------------------------------------------------------------------------- -->
   <!-- CSS -->
   <link rel="stylesheet" href="/public/css/main.css">
-  <link rel="stylesheet" href="/public/css/style.css">
+  <link rel="stylesheet" href="/public/css/styles.css">
   <link rel="stylesheet" href="/public/css/card_all.css">
   <link rel="stylesheet" href="/public/css/card_detail.css">
   <!-- END CSS -->
   <!-- ----------------------------------------------------------------------------- -->
-  <title>TCG Player</title>
+  <!-- JS -->
+  <script src="/public/js/main.js"></script>
+  <!-- END JS -->
+  <title><?php echo htmlspecialchars($title); ?></title>
 </head>
 
 <body>
@@ -85,34 +125,21 @@ $count = count($games);
     <div class="header__content">
       <!-- LOGO -->
       <div class="header__logo">
-        <a href="/index.php"><img src="/public/images/logo.png" alt="TCG Player" /></a>
+        <a href="/index.php"><img src="/public/images/<?php echo htmlspecialchars($logo); ?>" alt="TCG Player" /></a>
       </div>
       <!-- SEARCH -->
       <div class="header__search">
-        <select name="" id="">
-          <option value="1">All</option>
-          <option value="2">Akora TCG</option>
-          <option value="3">Alpha Clash</option>
-          <option value="4">Alternate Souls</option>
-          <option value="5">Argent Saga</option>
-          <option value="6">Bakugan TCG</option>
-          <option value="7">Battle Spirits</option>
-          <option value="8">Books</option>
-          <option value="9">Bulk Lots</option>
-          <option value="10">Card Sleeves</option>
-          <option value="11">Card Storage</option>
-          <option value="12">Chrono Clash</option>
-          <option value="13">Collectible</option>
-          <option value="14">D & D Miniatures</option>
-          <option value="15">Deck Boxes</option>
-          <option value="16">Dice Masters</option>
-          <option value="17">Dungeons</option>
-          <option value="18">Digimon Card</option>
-          <option value="19">Disney Lorcana</option>
-          <option value="20">Dragoborne</option>
+        <select name="game" id="game-select">
+          <option value="">All</option>
+          <?php foreach ($all_games as $game): ?>
+            <option value="<?php echo htmlspecialchars($game['id']); ?>">
+              <?php echo htmlspecialchars($game['name']); ?>
+            </option>
+          <?php endforeach; ?>
         </select>
-        <input type="text" placeholder="Search your favorite products">
+        <input autocomplete="off" type="text" id="search-input" placeholder="Search your favorite products">
         <i class="fa-solid fa-magnifying-glass"></i>
+        <div id="search-results" class="search-results"></div>
       </div>
       <!-- END SEARCH -->
       <!-- ACTION -->
@@ -131,72 +158,88 @@ $count = count($games);
     <!-- NAVBAR -->
     <div class="header__navbar">
       <ul class="header__list">
-        <?php foreach ($games as $game): ?>
-          <li>
-            <?php echo htmlspecialchars($game['name']); ?> <i class='bx bxs-down-arrow'></i>
-            <?php if (!empty($game['sets'])): ?>
-              <ul class="header__submenu">
-                <?php foreach ($game['sets'] as $set): ?>
-                  <li><a href="/views/card_all.php?set_id=<?php echo $set['id']; ?>"><?php echo htmlspecialchars($set['name']); ?></a></li>
-                <?php endforeach; ?>
-              </ul>
-            <?php endif; ?>
-          </li>
-        <?php endforeach; ?>
-        <li>More <i class='bx bxs-down-arrow'></i></li>
+        <?php
+        $game_count = 0;
+        $more_games = [];
+        foreach ($games as $game_id => $game):
+          if ($game_count < 7): // Thay đổi từ 7 thành 8
+            $menu_class = ($game_count >= 4 && $game_count < 7) ? 'custom-position' : '';
+        ?>
+            <li class="<?php echo $menu_class; ?>">
+              <?php echo htmlspecialchars($game['name']); ?> <i class='bx bxs-down-arrow'></i>
+              <?php if (!empty($game['sets'])): ?>
+                <ul class="header__submenu">
+                  <div class="header__sub__title">
+                    <h3><?php echo htmlspecialchars($game['name']); ?></h3>
+                    <h5><a href="/views/card_all.php?game_id=<?php echo $game_id; ?>">Shop All</a></h5>
+                  </div>
+                  <div class="header__sub__cnt">
+                    <div class="header__sub__cnt__left">
+                      <h4>All Sets</h4>
+                      <?php foreach ($game['sets'] as $set): ?>
+                        <li><a href="/views/card_all.php?set_id=<?php echo $set['id']; ?>">
+                            <?php echo htmlspecialchars($set['name']); ?></a></li>
+                      <?php endforeach; ?>
+                    </div>
+                    <div class="header__sub__cnt__mid">
+                      <h4><a href="#">More</a></h4>
+                      <li><a href="#">Articles</a></li>
+                      <li><a href="#">Mass Entry</a></li>
+                      <li><a href="#">Gift Cards</a></li>
+                      <li><a href="#">Help</a></li>
+                    </div>
+                    <div class="header__sub__cnt__right">
+                      <div class="header__sub__cnt__right--top">
+                        <div class="header__sub__cnt__right--img">
+                          <?php if ($latest_set = $latest_sets_by_game[$game_id] ?? null && $latest_set['image']): ?>
+                            <img src="/public/images/sets/<?php echo htmlspecialchars($latest_set['image']); ?>" alt="<?php echo htmlspecialchars($latest_set['name']); ?>">
+                          <?php else: ?>
+                            <img src="/public/images/placeholder.jpg" alt="No image available">
+                          <?php endif; ?>
+                        </div>
+                        <h4><?php echo $latest_set ? htmlspecialchars($latest_set['name']) : 'No set available'; ?></h4>
+                        <button>Order Now</button>
+                      </div>
+                      <div class="header__sub__cnt__right--bottom">
+                        <button class="header__sub__cnt__right--bottom--price"><i class="fa-solid fa-coins"></i> Price Guide</button>
+                        <button class="header__sub__cnt__right--bottom--search"><i class="fa-solid fa-search"></i> Advanced Search</button>
+                      </div>
+                    </div>
+                  </div>
+                </ul>
+              <?php endif; ?>
+            </li>
+        <?php
+          else:
+            $more_games[$game_id] = $game;
+          endif;
+          $game_count++;
+        endforeach;
+        ?>
+        <li>
+          More <i class='bx bxs-down-arrow'></i>
+          <?php if (!empty($more_games)): ?>
+            <ul class="header__submenu">
+              <?php foreach ($more_games as $game_id => $game): ?>
+                <li>
+                  <?php echo htmlspecialchars($game['name']); ?>
+                  <?php if (!empty($game['sets'])): ?>
+                    <ul class="header__submenu">
+                      <?php foreach ($game['sets'] as $set): ?>
+                        <li><a href="/views/card_all.php?set_id=<?php echo $set['id']; ?>"><?php echo htmlspecialchars($set['name']); ?></a></li>
+                      <?php endforeach; ?>
+                    </ul>
+                  <?php endif; ?>
+                </li>
+              <?php endforeach; ?>
+            </ul>
+          <?php endif; ?>
+        </li>
         <li>Subscribe to TCGplayer</li>
       </ul>
     </div>
   </header>
   <div id="overlay"></div>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const menuItems = document.querySelectorAll('.header__list > li');
-      const overlay = document.getElementById('overlay');
-
-      menuItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-          e.stopPropagation();
-          const submenu = this.querySelector('.header__submenu');
-          if (submenu) {
-            // Đóng tất cả các submenu khác và xóa class active
-            menuItems.forEach(otherItem => {
-              if (otherItem !== this) {
-                otherItem.classList.remove('active');
-                const otherSubmenu = otherItem.querySelector('.header__submenu');
-                if (otherSubmenu) {
-                  otherSubmenu.style.display = 'none';
-                }
-              }
-            });
-
-            // Chuyển đổi hiển thị của submenu hiện tại và thêm/xóa class active
-            if (submenu.style.display === 'block') {
-              submenu.style.display = 'none';
-              this.classList.remove('active');
-              overlay.style.display = 'none';
-            } else {
-              submenu.style.display = 'block';
-              this.classList.add('active');
-              overlay.style.display = 'block';
-            }
-          }
-        });
-      });
-
-      // Đóng submenu và xóa class active khi click ra ngoài
-      overlay.addEventListener('click', function() {
-        menuItems.forEach(item => {
-          item.classList.remove('active');
-          const submenu = item.querySelector('.header__submenu');
-          if (submenu) {
-            submenu.style.display = 'none';
-          }
-        });
-        overlay.style.display = 'none';
-      });
-    });
-  </script>
 </body>
 
 </html>

@@ -1,5 +1,4 @@
 <!-- FOOTER -->
-
 <footer>
   <div class="footer__banner">
     <i class='bx bx-book-reader'></i>
@@ -90,7 +89,7 @@
     <span>©2024 <b>Pokémon</b>. ©1995 - 2024 Nintendo/Creatures Inc./GAME FREAK inc. TM, ®Nintendo.</span>
     <span><b>Privacy Policy • Terms of Service • Website Data Collection • Do Not Sell or Share My Personal Information</b></span>
     <br>
-    <span>© 2024 sunao. All Rights Reserved.</span>
+    <span><?php echo htmlspecialchars($footer_desc); ?></span>
   </div>
 </footer>
 <!-- END FOOTER -->

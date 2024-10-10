@@ -20,11 +20,13 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
   <link rel="icon" href="/public/images/favicon.ico">
   <!-- CSS -->
   <link rel="stylesheet" href="/admin/assets/css/styles.css">
-  <link rel="stylesheet" href="/admin/assets/css/content.css">
+  <link rel="stylesheet" href="/admin/assets/css/web_setting.css">
+  <link rel="stylesheet" href="/admin/assets/css/product.css">
+  <link rel="stylesheet" href="/admin/assets/css/stores.css">
   <!-- JS -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-  <title>Admin Panel</title>
+  <title>Admin Control Panel</title>
 </head>
 
 <body>
@@ -36,19 +38,26 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
       <nav>
         <ul>
           <li><a href="#" data-page="dashboard"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
-          <li><a href="#" data-page="products"><i class="fa-solid fa-box"></i> Products</a></li>
-          <li><a href="#" data-page="store"><i class="fa-solid fa-store"></i> Store</a></li>
-          <li><a href="#" data-page="add_card"><i class="fa-solid fa-plus"></i> Add Card</a></li>
-          <li><a href="#" data-page="orders"><i class="fa-solid fa-box"></i> Orders</a></li>
+          <li><a href="#" data-page="website_settings"><i class="fa-solid fa-cog"></i> Website Settings</a></li>
+          <li><a href="#" data-page="products"><i class="fa-solid fa-box"></i> Products Management</a></li>
+          <li><a href="#" data-page="stores"><i class="fa-solid fa-store"></i> Stores Configuration</a></li>
+          <li><a href="#" data-page="users"><i class="fa-solid fa-user"></i> Users</a></li>
+          <li><a href="#" data-page="orders"><i class="fa-solid fa-box"></i> Orders Management</a></li>
+          <li><a href="#" data-page="faqs"><i class="fa-solid fa-question"></i> FAQs</a></li>
         </ul>
       </nav>
     </aside>
     <div class="content">
       <header class="header">
-        <div class="logo">Admin Panel</div>
+        <div class="logo">Admin Control Panel</div>
         <div class="user-info">
-          <span>Welcome, Admin</span>
-          <a href="/admin/auth/logout.php">Logout</a>
+          <span>Administrator</span>
+          <div class="user-dropdown">
+            <img src="/public/images/admin.png" alt="Admin">
+            <div class="dropdown-content">
+              <a href="/admin/auth/logout.php">Logout</a>
+            </div>
+          </div>
         </div>
       </header>
       <main class="main" id="main-content">
@@ -85,9 +94,19 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
       // Load initial page
       var initialPage = '<?php echo $page; ?>';
       loadPage(initialPage);
+
+      // User dropdown
+      $('.user-dropdown img').click(function(e) {
+        e.stopPropagation();
+        $('.dropdown-content').toggleClass('show');
+      });
+
+      $(document).click(function() {
+        $('.dropdown-content').removeClass('show');
+      });
     });
   </script>
-  <script src="/admin/assets/scripts.js"></script>
+  <script src="/admin/assets/js/scripts.js"></script>
 </body>
 
 </html>

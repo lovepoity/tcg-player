@@ -17,7 +17,7 @@ $query = "SELECT c.id, c.name, c.image_filename, g.name AS game_name, s.name AS 
           JOIN games g ON s.game_id = g.id
           WHERE c.name LIKE :search";
 
-$params = [':search' => "$search%"]; // Thay đổi ở đây
+$params = [':search' => "$search%"];
 
 if ($game_id > 0) {
   $query .= " AND g.id = :game_id";

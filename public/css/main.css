@@ -3,12 +3,13 @@
   --white-color: #fff;
   --black-color: #000;
   --link-color: #356997;
-  --gray-color: #5E636C;
+  --gray-color: #5F6D7A;
   --green-color: #07772D ;
   --blue-color: #0935DB;
   --background-color: #F8F8F8;
   --border-color: #EBEDEF;
   --main-green-color: #34D599;
+  --light-green-color: #D3FFEE;
 }
 * {
   margin: 0;
@@ -75,8 +76,9 @@ header{
   justify-content: center;
   position: relative;
   height: 32px;
-  width: 60%;
+  width: 70%;
   font-size: 1.6rem;
+  margin:0 10px;
 }
 
 .header__search select{
@@ -165,12 +167,18 @@ header{
   height: 32px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: right;
   font-size: 1.2rem;
   font-weight: 600;
-  width: 300px;
+  min-width: 360px;
 }
-
+.header__welcome {
+  color: var(--gray-color);
+  margin-right: 10px;
+}
+.header__welcome p{
+  color: var(--black-color);
+}
 .header__signin{
   padding: 6px 18px;
   display: flex;
@@ -179,14 +187,17 @@ header{
   height: 100%;
   border-radius: 4px;
   background-color: #1A65A5;
-  color: var(--white-color);
+  color: var(--white-color) !important;
   cursor: pointer;
+  margin-right: 10px;
 }
 .header__signin:hover{
   opacity: 0.95;
 }
 
+/* HEADER USER */
 .header__user{
+  position: relative;
   cursor: pointer;
   height: 100%;
   width: 32px;
@@ -195,10 +206,50 @@ header{
   justify-content: center;
   border-radius: 4px;
   border: 1px solid rgb(0, 0, 0, 0.1);
+  margin-right: 10px;
 }
 .header__user:hover{
-  border: 1px solid rgb(0, 0, 0, 0.2);
+  border: 1px solid rgb(0, 0, 0, 0.3);
 }
+.header__user-menu{
+  display: none;
+  position: absolute;
+  top: calc(100% + 5px);
+  right: 0;
+  background-color: var(--white-color);
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+}
+.user__menu__list{
+  display: flex;
+}
+
+.user__menu__list h4{
+  margin-bottom: 10px;
+  font-size: 1.6rem;
+}
+.user__menu__list ul{
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+.user__menu__list ul li { 
+  color: #0f0f0f ;
+  font-weight: normal;
+  margin-bottom: 10px;
+  font-size: 1.38rem;
+}
+.user__menu__list a:hover {
+  text-decoration: underline;
+  color: var(--link-color);
+}
+.user__menu__right{
+  border-left: 1px solid var(--border-color);
+  padding-left: 15px;
+}
+
 
 .header__sell{
   cursor: pointer;
@@ -208,21 +259,25 @@ header{
   justify-content: center;
   height: 100%;
   border-radius: 4px;
+  margin-right: 10px;
 }
 .header__sell:hover{
   background-color: var(--background-color);
 }
 
 .header__cart{
+  height: 32px;
   cursor: pointer;
-  padding: 6px 26px;
+  border-radius: 4px;
+  border: 1px solid rgb(0, 0, 0, 0);
+}
+.header__cart a{
   height: 100%;
   width: 32px;
+  padding: 7px 26px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  border: 1px solid rgb(255, 255, 255, 0.1);
 }
 .header__cart:hover{
   border: 1px solid rgb(0, 0, 0, 0.2);

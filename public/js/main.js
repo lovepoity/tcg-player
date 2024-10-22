@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (submenu) submenu.style.display = 'none';
     });
     searchResults.style.display = 'none';
+    if (userMenu) userMenu.style.display = 'none';
     overlay.style.display = 'none';
   }
 
@@ -42,23 +43,22 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(cards => {
           const resultsHtml = cards.map(card => `
-        <div class="search-result" data-id="${card.id}">
-          <img src="/public/images/product/${card.image_filename}" alt="${card.name}">
-          <div class="search-result-info">
-            <span class="card-name">${card.name}</span>
-            <span class="card-details">${card.game_name}</span>
-            <span class="card-details">${card.set_name}</span>
-          </div>
-        </div>
-      `).join('');
+            <div class="search-result" data-id="${card.id}">
+              <img src="/public/images/product/${card.image_filename}" alt="${card.name}">
+              <div class="search-result-info">
+                <span class="card-name">${card.name}</span>
+                <span class="card-details">${card.game_name}</span>
+                <span class="card-details">${card.set_name}</span>
+              </div>
+            </div>
+          `).join('');
 
           searchResults.innerHTML = resultsHtml;
           searchResults.style.display = cards.length > 0 ? 'block' : 'none';
           if (cards.length > 0) showOverlay();
 
           // Thêm sự kiện click cho mỗi kết quả tìm kiếm
-          const searchResultItems = searchResults.querySelectorAll('.search-result');
-          searchResultItems.forEach(item => {
+          searchResults.querySelectorAll('.search-result').forEach(item => {
             item.addEventListener('click', function(e) {
               e.preventDefault();
               e.stopPropagation();
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
       currentFocus += e.key === 'ArrowDown' ? 1 : -1;
       addActive(results);
     } else if (e.key === 'Enter') {
-      e.preventDefault(); // Ngăn chặn hành vi mặc định của phím Enter
+      e.preventDefault();
       if (currentFocus > -1 && results[currentFocus]) {
         results[currentFocus].click();
       }
@@ -109,4 +109,26 @@ document.addEventListener('DOMContentLoaded', function() {
   searchInput.addEventListener('click', e => e.stopPropagation());
   searchInput.addEventListener('input', handleSearchInput);
   searchInput.addEventListener('keydown', handleSearchKeydown);
+
+  // Xử lý menu user
+  const userIcon = document.querySelector('.header__user');
+  const userMenu = document.querySelector('.header__user-menu');
+
+  if (userIcon && userMenu) {
+    userIcon.addEventListener('click', function(e) {
+      e.stopPropagation();
+      closeAllDropdowns();
+      if (userMenu.style.display !== 'block') {
+        userMenu.style.display = 'block';
+        showOverlay();
+      }
+    });
+  }
+
+  // Đóng menu khi click bên ngoài
+  document.addEventListener('click', function(e) {
+    if (userIcon && userMenu && !userIcon.contains(e.target) && !userMenu.contains(e.target)) {
+      userMenu.style.display = 'none';
+    }
+  });
 });

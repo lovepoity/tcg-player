@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 10, 2024 at 05:11 PM
+-- Generation Time: Oct 14, 2024 at 04:37 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -119,7 +119,7 @@ INSERT INTO `cards` (`id`, `name`, `image_filename`, `product_details`, `rarity`
 (15, 'Dr.Kureha', '15.jpg', '[On Play] Look at 4 cards from the top of your deck; reveal up to 1 [Tony Tony.Chopper] or [Drum Kingdom] type card other than [Dr.Kureha] and add it to your hand. Then, place the rest at the bottom of your deck in any order.', 'R', 'OP08-015', 'Red', 'Character', '1', '2000', 'Drum Kingdom', 'Wisdom', 'yuu', 47, '2024-09-26 01:11:54', '2024-09-27 09:27:28'),
 (16, 'Charlotte Pudding', '16.jpg', '[Your Turn] [Once Per Turn] When a DON!! card on your field is returned to your DON!! deck, add up to 1 DON!! card from your DON!! deck and rest it.', 'R', 'OP08-067', 'Purple', 'Character', '3', '4000', 'Big Mom Pirates', 'Wisdom', 'Yuu Shimotsuki', 47, '2024-09-26 01:11:54', '2024-09-27 09:27:18'),
 (17, 'Mont Blanc Noland', '17.jpg', '[On Play] If your Leader has the [Shandian Warrior] type and you have a [Kalgara] Character, add up to 1 card from the top of your deck to the top of your Life cards.', 'R', 'OP08-109', 'Yellow', 'Character', '5', '6000', 'Jaya Botanist', 'Slash', 'Moopic', 47, '2024-09-26 01:11:54', '2024-09-27 09:27:10'),
-(18, 'Silvers Rayleigh (Parallel) (Manga)', '18.jpg', 'Dr. Kureha and Dr. Hiriluk from the Drum Kingdom Arc, and Carrot and Wanda from the Zou Arc appear! Plus, the Whitebeard Pirates appear as blue, Big Mom Pirates as purple, and Animal Kingdom Pirates as black, opening up a host of new strategies!', 'SEC', 'OP08-118', 'Red', 'Character', '8', '8000', 'Former Roger Pirates', 'Slash', 'Eiichiro Oda', 47, '2024-09-26 01:11:54', '2024-09-29 18:11:39'),
+(18, 'Silvers Rayleigh (Parallel) (Manga)', '18.jpg', '[On Play] Select up to 2 of your opponent\'s Characters, and give 1 Character 3000 power and the other 2000 power until the end of your opponent\'s next turn. Then, K.O. up to 1 of your opponent\'s Characters with 3000 power or less.', 'SEC', 'OP08-118', 'Red', 'Character', '8', '8000', 'Former Roger Pirates', 'Slash', 'Eiichiro Oda', 47, '2024-09-26 01:11:54', '2024-10-12 04:00:26'),
 (19, 'Charlotte Katakuri', '19.jpg', '[On Play] You may turn 1 card from the top of your Life cards face-down: Add up to 1 DON!! card from your DON!! deck and set it as active.', 'SR', 'OP08-063', 'Purple', 'Character', '6', '7000', 'Big Mom Pirates', 'Strike', 'Koushi Rokushiro', 47, '2024-09-26 01:11:54', '2024-09-27 09:26:30'),
 (20, 'Pedro', '20.jpg', '[Blocker] (After your opponent declares an attack, you may rest this card to make it the new target of the attack.)', 'R', 'OP08-030', 'Green', 'Character', '4', '5000', 'Minks', 'Slash', 'Hatori Kyoka', 47, '2024-09-26 01:11:54', '2024-09-27 09:26:18'),
 (21, 'Edward.Newgate', '21.jpg', 'Product Details\r\n[On Play] If your Leaders type includes \"Whitebeard Piratess\" and you have 2 or less Life cards, select all of your opponents Characters on their field. Until the end of your opponents next turn, none of the selected Characters can attack unless your opponent trashes 2 cards from their hand whenever they attack.', 'SR', 'OP08-043', 'Blue', 'Character', '10', '12000', 'The Four Emperors Whitebeard Pirates', 'Special', 'Hayaken-sarena', 47, '2024-09-26 01:11:54', '2024-09-27 09:26:08'),
@@ -223,6 +223,21 @@ INSERT INTO `card_listings` (`id`, `card_id`, `store_id`, `quantity`, `price`, `
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `cart`
+--
+
+CREATE TABLE `cart` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `card_listing_id` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `games`
 --
 
@@ -245,6 +260,49 @@ INSERT INTO `games` (`id`, `name`, `created_at`, `updated_at`) VALUES
 (5, 'One Piece', '2024-09-26 01:11:54', '2024-09-26 01:11:54'),
 (6, 'Digimon', '2024-09-26 01:11:54', '2024-09-26 01:11:54'),
 (7, 'Flesh and Blood', '2024-09-26 01:11:54', '2024-09-26 01:11:54');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `orders`
+--
+
+CREATE TABLE `orders` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `total_amount` decimal(10,2) NOT NULL,
+  `shipping_fee` decimal(10,2) NOT NULL,
+  `address` text NOT NULL,
+  `city` varchar(100) NOT NULL,
+  `state` varchar(100) NOT NULL,
+  `postal_code` varchar(20) NOT NULL,
+  `country` varchar(100) NOT NULL,
+  `phone` varchar(20) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `status` enum('pending','processing','shipped','delivered','cancelled') NOT NULL DEFAULT 'pending',
+  `payment_method` enum('paypal','visa_debit') NOT NULL,
+  `payment_status` enum('pending','completed','failed','refunded') NOT NULL DEFAULT 'pending',
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `order_items`
+--
+
+CREATE TABLE `order_items` (
+  `id` int(11) NOT NULL,
+  `order_id` int(11) NOT NULL,
+  `card_listing_id` int(11) NOT NULL,
+  `store_id` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `status` enum('pending','processing','shipped','delivered','cancelled') NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -344,6 +402,8 @@ INSERT INTO `sets` (`id`, `game_id`, `name`, `image`, `release_date`, `created_a
 CREATE TABLE `stores` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `phone` varchar(20) DEFAULT NULL,
   `password` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -353,13 +413,35 @@ CREATE TABLE `stores` (
 -- Dumping data for table `stores`
 --
 
-INSERT INTO `stores` (`id`, `name`, `password`, `created_at`, `updated_at`) VALUES
-(1, 'SYGO', '$2y$10$V/UxlneiXoUW0fZ7u3X3yOYGuCZjRoS.TfZFzmjKfd6xdfZxD/iK6', '2024-09-29 17:36:44', '2024-09-29 17:39:58'),
-(2, 'Pro-PlayGames', '$2y$10$V/UxlneiXoUW0fZ7u3X3yOYGuCZjRoS.TfZFzmjKfd6xdfZxD/iK6', '2024-09-29 17:36:44', '2024-09-29 17:39:58'),
-(3, 'NinjaFinds', '$2y$10$V/UxlneiXoUW0fZ7u3X3yOYGuCZjRoS.TfZFzmjKfd6xdfZxD/iK6', '2024-09-29 17:36:44', '2024-09-29 17:39:58'),
-(4, 'CollectorSellers', '$2y$10$V/UxlneiXoUW0fZ7u3X3yOYGuCZjRoS.TfZFzmjKfd6xdfZxD/iK6', '2024-09-29 17:36:44', '2024-09-29 17:39:58'),
-(5, 'Sullys Abode', '$2y$10$V/UxlneiXoUW0fZ7u3X3yOYGuCZjRoS.TfZFzmjKfd6xdfZxD/iK6', '2024-09-29 17:36:44', '2024-09-29 17:39:58'),
-(6, 'PokeJLR', '$2y$10$V/UxlneiXoUW0fZ7u3X3yOYGuCZjRoS.TfZFzmjKfd6xdfZxD/iK6', '2024-09-29 17:36:44', '2024-09-29 17:39:58');
+INSERT INTO `stores` (`id`, `name`, `email`, `phone`, `password`, `created_at`, `updated_at`) VALUES
+(1, 'SYGO', 'lovepoitys@gmail.com', '+84943090202', '$2y$10$V/UxlneiXoUW0fZ7u3X3yOYGuCZjRoS.TfZFzmjKfd6xdfZxD/iK6', '2024-09-29 17:36:44', '2024-10-14 14:30:44'),
+(2, 'Pro-PlayGames', 'lovepoitys@gmail.com', '+84943090202', '$2y$10$V/UxlneiXoUW0fZ7u3X3yOYGuCZjRoS.TfZFzmjKfd6xdfZxD/iK6', '2024-09-29 17:36:44', '2024-10-14 14:30:44'),
+(3, 'NinjaFinds', 'lovepoitys@gmail.com', '+84943090202', '$2y$10$V/UxlneiXoUW0fZ7u3X3yOYGuCZjRoS.TfZFzmjKfd6xdfZxD/iK6', '2024-09-29 17:36:44', '2024-10-14 14:30:44'),
+(4, 'CollectorSellers', 'lovepoitys@gmail.com', '+84943090202', '$2y$10$V/UxlneiXoUW0fZ7u3X3yOYGuCZjRoS.TfZFzmjKfd6xdfZxD/iK6', '2024-09-29 17:36:44', '2024-10-14 14:30:44'),
+(5, 'Sullys Abode', 'lovepoitys@gmail.com', '+84943090202', '$2y$10$V/UxlneiXoUW0fZ7u3X3yOYGuCZjRoS.TfZFzmjKfd6xdfZxD/iK6', '2024-09-29 17:36:44', '2024-10-14 14:30:44'),
+(6, 'PokeJLR', 'lovepoitys@gmail.com', '+84943090202', '$2y$10$V/UxlneiXoUW0fZ7u3X3yOYGuCZjRoS.TfZFzmjKfd6xdfZxD/iK6', '2024-09-29 17:36:44', '2024-10-14 14:30:44');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `first_name` varchar(50) NOT NULL,
+  `last_name` varchar(50) NOT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `city` varchar(100) DEFAULT NULL,
+  `state` varchar(100) DEFAULT NULL,
+  `postal_code` varchar(20) DEFAULT NULL,
+  `country` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -382,7 +464,7 @@ CREATE TABLE `website_info` (
 --
 
 INSERT INTO `website_info` (`id`, `logo`, `favicon`, `title`, `footer_desc`, `created_at`, `updated_at`) VALUES
-(1, 'logo.png', 'favicon.ico','TCG Player', '© 2024 sunao. All Rights Reserved.', '2024-10-10 14:20:25', '2024-10-10 15:09:33');
+(1, 'logo.png', 'favicon.ico', 'TCG Player', '© 2024 sunao. All Rights Reserved.', '2024-10-10 14:20:25', '2024-10-11 03:32:16');
 
 --
 -- Indexes for dumped tables
@@ -417,10 +499,34 @@ ALTER TABLE `card_listings`
   ADD KEY `store_id` (`store_id`);
 
 --
+-- Indexes for table `cart`
+--
+ALTER TABLE `cart`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `card_listing_id` (`card_listing_id`);
+
+--
 -- Indexes for table `games`
 --
 ALTER TABLE `games`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `orders`
+--
+ALTER TABLE `orders`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `order_items`
+--
+ALTER TABLE `order_items`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `order_id` (`order_id`),
+  ADD KEY `card_listing_id` (`card_listing_id`),
+  ADD KEY `order_items_ibfk_3` (`store_id`);
 
 --
 -- Indexes for table `sets`
@@ -434,6 +540,13 @@ ALTER TABLE `sets`
 --
 ALTER TABLE `stores`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- Indexes for table `website_info`
@@ -461,7 +574,7 @@ ALTER TABLE `banners`
 -- AUTO_INCREMENT for table `cards`
 --
 ALTER TABLE `cards`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `card_listings`
@@ -470,10 +583,28 @@ ALTER TABLE `card_listings`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=143;
 
 --
+-- AUTO_INCREMENT for table `cart`
+--
+ALTER TABLE `cart`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `games`
 --
 ALTER TABLE `games`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `orders`
+--
+ALTER TABLE `orders`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `order_items`
+--
+ALTER TABLE `order_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `sets`
@@ -486,6 +617,12 @@ ALTER TABLE `sets`
 --
 ALTER TABLE `stores`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `website_info`
@@ -509,6 +646,27 @@ ALTER TABLE `cards`
 ALTER TABLE `card_listings`
   ADD CONSTRAINT `card_listings_ibfk_1` FOREIGN KEY (`card_id`) REFERENCES `cards` (`id`),
   ADD CONSTRAINT `card_listings_ibfk_3` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`);
+
+--
+-- Constraints for table `cart`
+--
+ALTER TABLE `cart`
+  ADD CONSTRAINT `cart_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `cart_ibfk_2` FOREIGN KEY (`card_listing_id`) REFERENCES `card_listings` (`id`);
+
+--
+-- Constraints for table `orders`
+--
+ALTER TABLE `orders`
+  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `order_items`
+--
+ALTER TABLE `order_items`
+  ADD CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
+  ADD CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`card_listing_id`) REFERENCES `card_listings` (`id`),
+  ADD CONSTRAINT `order_items_ibfk_3` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`);
 
 --
 -- Constraints for table `sets`

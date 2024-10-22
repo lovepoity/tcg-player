@@ -154,7 +154,6 @@ $game_id = $info['game_id'];
     $('.pagination a').on('click', function(e) {
       e.preventDefault();
       var url = $(this).attr('href');
-
       $.ajax({
         url: '/views/load_cards.php' + url.substring(url.indexOf('?')),
         type: 'GET',

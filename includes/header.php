@@ -83,6 +83,11 @@ foreach ($latest_sets as $set) {
   $latest_sets_by_game[$set['game_id']] = $set;
 }
 
+// Đảm bảo session đã được bắt đầu
+if (session_status() == PHP_SESSION_NONE) {
+  session_start();
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -108,6 +113,7 @@ foreach ($latest_sets as $set) {
   <link rel="stylesheet" href="/public/css/styles.css">
   <link rel="stylesheet" href="/public/css/card_all.css">
   <link rel="stylesheet" href="/public/css/card_detail.css">
+  <link rel="stylesheet" href="/public/css/cart.css">
   <!-- END CSS -->
   <!-- ----------------------------------------------------------------------------- -->
   <!-- JS -->
@@ -144,13 +150,62 @@ foreach ($latest_sets as $set) {
       <!-- END SEARCH -->
       <!-- ACTION -->
       <div class="header__action">
-        <div class="header__signin">Sign In</div>
-        <div class="header__user">
-          <i class="fa-regular fa-user"></i>
-        </div>
+        <?php if (isset($_SESSION['user_email'])): ?>
+          <span class="header__welcome">Welcome Back, <p><?php echo htmlspecialchars($_SESSION['user_email']); ?></p></span>
+          <div class="header__user">
+            <i class="fa-regular fa-user"></i>
+            <div class="header__user-menu">
+              <span class="header__welcome user__menu__welcome">Welcome Back, <p><?php echo htmlspecialchars($_SESSION['user_email']); ?></p></span>
+              <div class="user__menu__list">
+                <div class="user__menu__left">
+                  <h4><a href="#">Your Account</a></h4>
+                  <ul>
+                    <li><a href="#">Account</a></li>
+                    <li><a href="#">Order History</a></li>
+                    <li><a href="#">Account & Data</a></li>
+                    <li><a href="#">Messages</a></li>
+                    <li><a href="#">Your Collection</a></li>
+                    <li><a href="#">Manage Payment Methods</a></li>
+                    <li><a href="#">TCGplayer Subscription</a></li>
+                    <li><a href="#">Manage Addresses</a></li>
+                    <li><a href="#">Store Credit</a></li>
+                    <li><a href="#">Email Preferences</a></li>
+                  </ul>
+                </div>
+                <div class="user__menu__right">
+                  <h4><a href="#">Sell</a></h4>
+                  <ul>
+                    <li><a href="#">Account</a></li>
+                    <li><a href="#">Seller Portal</a></li>
+                    <li><a href="#">Marketplace Seller Resources</a></li>
+                    <li><a href="#">Pro Seller Resources</a></li>
+                  </ul>
+                  <h4><a href="#">Help</a></h4>
+                  <ul>
+                    <li><a href="#">Contact Customer Support</a></li>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Refund and Return Policy</a></li>
+                    <li><a href="#">TCGplayer Safeguard</a></li>
+                  </ul>
+                  <h4><a href="#">Gift Cards</a></h4>
+                  <ul>
+                    <li><a href="#">Buy a Gift Card</a></li>
+                    <li><a href="#">Redeem a Gift Card</a></li>
+                  </ul>
+                  <a style="font-weight: normal;" href="/views/login/logout.php"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        <?php else: ?>
+          <a class="header__signin" href="/views/login/sign_in.php">Sign In</a>
+          <div class="header__user">
+            <i class="fa-regular fa-user"></i>
+          </div>
+        <?php endif; ?>
         <div class="header__sell">Sell With Us</div>
         <div class="header__cart">
-          <i class="fa-solid fa-cart-shopping"></i>
+          <a href="/views/cart/cart.php"><i class="fa-solid fa-cart-shopping"></i></a>
         </div>
       </div>
       <!-- END ACTION -->
@@ -240,6 +295,7 @@ foreach ($latest_sets as $set) {
     </div>
   </header>
   <div id="overlay"></div>
+  <script src="/public/js/main.js"></script>
 </body>
 
 </html>

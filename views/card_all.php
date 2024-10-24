@@ -10,36 +10,47 @@ $subPageBanner = get_sub_page_banner();
 $game_id = isset($_GET['game_id']) ? intval($_GET['game_id']) : null;
 $set_id = isset($_GET['set_id']) ? intval($_GET['set_id']) : null;
 
+// Kiểm tra xem có yêu cầu hiển thị tất cả thẻ không
+$show_all = isset($_GET['show_all']) && $_GET['show_all'] == 1;
+
 // Thiết lập phân trang
 $items_per_page = 24;
 $current_page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $offset = ($current_page - 1) * $items_per_page;
 
-$total_items = get_total_cards($conn, $game_id, $set_id);
-$total_pages = ceil($total_items / $items_per_page);
+if ($show_all) {
+  $total_items = get_total_cards($conn);
+  $cards = get_all_cards_for_page($conn, $offset, $items_per_page);
+  $info = ['game_name' => 'All Games', 'set_name' => 'All Sets'];
+} else {
+  $total_items = get_total_cards($conn, $game_id, $set_id);
+  $cards = get_cards_for_page($conn, $game_id, $set_id, $offset, $items_per_page);
+  $info = get_game_set_info($conn, $game_id, $set_id);
+}
 
-$cards = get_cards_for_page($conn, $game_id, $set_id, $offset, $items_per_page);
-$info = get_game_set_info($conn, $game_id, $set_id);
+$total_pages = ceil($total_items / $items_per_page);
 
 $game_name = $info['game_name'];
 $set_name = isset($info['set_name']) ? $info['set_name'] : null;
-$game_id = $info['game_id'];
 ?>
 
 <div class="sub__page">
   <div class="navbar__sub-page">
     <!-- FILTER -->
     <div class="filter">
-      <div style="display: flex; align-items: center; background-color: #F7F7F8;" class="filter__item">
-        All Filters <span>2</span>
-      </div>
-      <div class="filter__item filter__style">
-        <?php echo htmlspecialchars($game_name); ?> <i class="fa-solid fa-xmark"></i>
-      </div>
-      <?php if ($set_name): ?>
+      <?php if ($show_all): ?>
         <div class="filter__item filter__style">
-          <?php echo htmlspecialchars($set_name); ?> <i class="fa-solid fa-angle-down"></i>
+          All Games and Sets <i class="fa-solid fa-xmark"></i>
         </div>
+      <?php else: ?>
+        <div class="filter__item filter__style">
+          <?php echo htmlspecialchars($game_name); ?> <i class="fa-solid fa-xmark"></i>
+        </div>
+        <?php if ($set_name): ?>
+          <div class="filter__item filter__style">
+            <?php echo htmlspecialchars($set_name); ?> <i class="fa-solid fa-angle-down"></i>
+          </div>
+        <?php endif; ?>
       <?php endif; ?>
       <div class="filter__item">
         Product Type <i class="fa-solid fa-angle-down"></i>
@@ -80,10 +91,14 @@ $game_id = $info['game_id'];
   <div class="sub__location">
     <a href="#">All Categories</a>
     <i class="fa-solid fa-chevron-right"></i>
-    <a href="/views/card_all.php?game_id=<?php echo $game_id; ?>"><?php echo htmlspecialchars($game_name); ?></a>
-    <?php if ($set_name): ?>
-      <i class="fa-solid fa-chevron-right"></i>
-      <p><?php echo htmlspecialchars($set_name); ?></p>
+    <?php if ($show_all): ?>
+      <p>All Games and Sets</p>
+    <?php else: ?>
+      <a href="/views/card_all.php?game_id=<?php echo $game_id; ?>"><?php echo htmlspecialchars($game_name); ?></a>
+      <?php if ($set_name): ?>
+        <i class="fa-solid fa-chevron-right"></i>
+        <p><?php echo htmlspecialchars($set_name); ?></p>
+      <?php endif; ?>
     <?php endif; ?>
   </div>
   <!-- BANNER -->
@@ -110,12 +125,25 @@ $game_id = $info['game_id'];
             <p class="product__set"><?php echo htmlspecialchars($card['set_name']); ?></p>
             <p class="product__rarity"><?php echo htmlspecialchars($card['rarity']); ?></p>
             <p class="product__card-number"><?php echo htmlspecialchars($card['card_number']); ?></p>
-            <?php if ($card['total_stores'] > 0): ?>
-              <p class="product__listing"><?php echo $card['total_stores']; ?> listings from</p>
+            <?php
+            $available_listings = array_filter($card['listings'] ?? [], function ($listing) {
+              return $listing['quantity'] > 0;
+            });
+            $total_available = count($available_listings);
+            ?>
+            <?php if ($total_available > 0): ?>
+              <p class="product__listing"><?php echo $total_available; ?> listing<?php echo $total_available > 1 ? 's' : ''; ?> from</p>
               <p class="product__price">
-                $<?php echo number_format($card['min_price'], 2); ?>
+                $<?php echo number_format(min(array_column($available_listings, 'price')), 2); ?>
               </p>
-              <p class="product__market-price">Market Price: <span style="color: var(--green-color);">$<?php echo number_format($card['avg_price'], 2); ?></span></p>
+              <?php
+              $total_quantity = array_sum(array_column($available_listings, 'quantity'));
+              $total_price = array_sum(array_map(function ($listing) {
+                return $listing['price'] * $listing['quantity'];
+              }, $available_listings));
+              $avg_price = $total_quantity > 0 ? $total_price / $total_quantity : 0;
+              ?>
+              <p class="product__market-price">Market Price: <span style="color: var(--green-color);">$<?php echo number_format($avg_price, 2); ?></span></p>
             <?php else: ?>
               <p class="product__listing">Out of Stock</p>
             <?php endif; ?>
@@ -130,7 +158,7 @@ $game_id = $info['game_id'];
   <?php if ($total_pages > 1): ?>
     <div class="pagination">
       <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-        <a href="?<?php echo $set_id ? 'set_id=' . $set_id : 'game_id=' . $game_id; ?>&page=<?php echo $i; ?>" <?php echo ($i == $current_page) ? 'class="active"' : ''; ?>><?php echo $i; ?></a>
+        <a href="?<?php echo $show_all ? 'show_all=1' : ($set_id ? 'set_id=' . $set_id : 'game_id=' . $game_id); ?>&page=<?php echo $i; ?>" <?php echo ($i == $current_page) ? 'class="active"' : ''; ?>><?php echo $i; ?></a>
       <?php endfor; ?>
     </div>
   <?php endif; ?>
@@ -147,8 +175,6 @@ $game_id = $info['game_id'];
     <!-- END BANNER -->
   <?php endif; ?>
 </div>
-<!-- Thêm vào cuối file, trước </body> -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   $(document).ready(function() {
     $('.pagination a').on('click', function(e) {

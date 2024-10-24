@@ -1,6 +1,7 @@
 <?php
 session_start();
 include '../includes/db_connect.php';
+include '../includes/cart_functions.php';
 
 header('Content-Type: application/json');
 
@@ -14,7 +15,12 @@ try {
   $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
   $stmt->execute();
 
-  echo json_encode(['success' => true, 'message' => 'Cart cleared successfully']);
+  $total_items = getCartItemCount($conn, $_SESSION['user_id']);
+  echo json_encode([
+    'success' => true,
+    'message' => 'Cart cleared successfully',
+    'total_items' => $total_items
+  ]);
 } catch (PDOException $e) {
   echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
 }

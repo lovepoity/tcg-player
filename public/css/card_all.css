@@ -91,10 +91,10 @@
 
 .filter__style{
   border: 1px solid var(--blue-color);
+  background-color: var(--background-color);
   color: var(--blue-color);
   &:hover{
-    background-color: var(--blue-color);
-    color: var(--white-color);
+    background-color: var(--white-color);
   }
 }
 .filter__item:last-child{

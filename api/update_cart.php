@@ -1,6 +1,7 @@
 <?php
 session_start();
 include '../includes/db_connect.php';
+include '../includes/cart_functions.php';
 
 header('Content-Type: application/json');
 
@@ -20,7 +21,12 @@ try {
   $stmt->execute();
 
   if ($stmt->rowCount() > 0) {
-    echo json_encode(['success' => true, 'message' => 'Cart updated successfully']);
+    $total_items = getCartItemCount($conn, $_SESSION['user_id']);
+    echo json_encode([
+      'success' => true,
+      'message' => 'Cart updated successfully',
+      'total_items' => $total_items
+    ]);
   } else {
     echo json_encode(['success' => false, 'message' => 'No changes made to the cart']);
   }

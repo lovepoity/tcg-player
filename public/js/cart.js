@@ -16,6 +16,7 @@ $(document).ready(function() {
   $('.quantity-select').change(function() {
     var cartId = $(this).data('cart-id');
     var newQuantity = $(this).val();
+    var $package = $(this).closest('.package-tab');
 
     $.ajax({
       url: '/api/update_cart.php',
@@ -26,17 +27,15 @@ $(document).ready(function() {
       },
       success: function(response) {
         if (response.success) {
-          updatePackageSummary(cartId);
+          updatePackageSummary($package);
           updateCartSummary();
           showToast('Quantity updated successfully');
+          updateCartCount(response.unique_items_count);
         } else {
-          console.error('Update failed:', response.message);
           showToast('Cannot update quantity: ' + response.message);
         }
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        console.error('AJAX error:', textStatus, errorThrown);
-        console.log('Response:', jqXHR.responseText);
         showToast('An error occurred while updating the quantity. Please check the console for details.');
       }
     });
@@ -62,15 +61,15 @@ $(document).ready(function() {
     });
   }
 
-  function updatePackageSummary(packageElement) {
-    var $package = $(packageElement);
+  function updatePackageSummary($package) {
     var $items = $package.find('.package-tab__content-wrapper');
-    var itemCount = $items.length;
+    var itemCount = 0;
     var subtotal = 0;
 
     $items.each(function() {
       var price = parseFloat($(this).find('.package-tab__item-sales-info-price').text().replace('$', ''));
       var quantity = parseInt($(this).find('.quantity-select').val());
+      itemCount += quantity;
       subtotal += price * quantity;
     });
 
@@ -99,9 +98,10 @@ $(document).ready(function() {
       success: function(response) {
         if (response.success) {
           $item.remove();
-          updatePackageSummary($package[0]);
+          updatePackageSummary($package);
           updateCartSummary();
           showToast('Item removed from cart');
+          updateCartCount(response.unique_items_count);
         } else {
           showToast('Cannot remove item: ' + response.message);
         }
@@ -145,15 +145,19 @@ $(document).ready(function() {
           $package.remove();
           updateCartSummary();
           showToast('Package removed successfully');
+          updateCartCount(response.unique_items_count);
         } else {
           showToast('Failed to remove package: ' + response.message);
         }
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        console.error('AJAX error:', textStatus, errorThrown);
-        console.log('Response:', jqXHR.responseText);
         showToast('An error occurred while removing the package. Please check the console for details.');
       }
     });
   });
+
+  // Cập nhật hàm updateCartCount
+  function updateCartCount(count) {
+    $('#cart-count').text(count);
+  }
 });

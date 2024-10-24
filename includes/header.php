@@ -88,6 +88,18 @@ if (session_status() == PHP_SESSION_NONE) {
   session_start();
 }
 
+function getCartItemCount($conn, $user_id)
+{
+  if (!$user_id) return 0;
+
+  $stmt = $conn->prepare("SELECT COUNT(*) as total FROM cart WHERE user_id = :user_id");
+  $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+  $stmt->execute();
+  $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+  return $result['total'] ?? 0;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -117,7 +129,9 @@ if (session_status() == PHP_SESSION_NONE) {
   <!-- END CSS -->
   <!-- ----------------------------------------------------------------------------- -->
   <!-- JS -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="/public/js/main.js"></script>
+  <script src="/public/js/cart.js"></script>
   <!-- END JS -->
   <title><?php echo htmlspecialchars($title); ?></title>
 </head>
@@ -205,7 +219,9 @@ if (session_status() == PHP_SESSION_NONE) {
         <?php endif; ?>
         <div class="header__sell">Sell With Us</div>
         <div class="header__cart">
-          <a href="/views/cart/cart.php"><i class="fa-solid fa-cart-shopping"></i></a>
+          <a href="/views/cart/cart.php"><i class="fa-solid fa-cart-shopping"></i>
+            <p id="cart-count"><?php echo getCartItemCount($conn, $_SESSION['user_id'] ?? null); ?></p>
+          </a>
         </div>
       </div>
       <!-- END ACTION -->

@@ -1,6 +1,7 @@
 <?php
 session_start();
 include __DIR__ . '/../includes/db_connect.php';
+include __DIR__ . '/../includes/cart_functions.php';
 
 header('Content-Type: application/json');
 
@@ -21,7 +22,12 @@ try {
   $stmt->bindParam(':store_id', $store_id, PDO::PARAM_INT);
   $stmt->execute();
 
-  echo json_encode(['success' => true, 'message' => 'Package removed successfully']);
+  $total_items = getCartItemCount($conn, $_SESSION['user_id']);
+  echo json_encode([
+    'success' => true,
+    'message' => 'Package removed successfully',
+    'unique_items_count' => $total_items
+  ]);
 } catch (PDOException $e) {
   echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
 }

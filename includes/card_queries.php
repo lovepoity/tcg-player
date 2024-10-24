@@ -70,60 +70,61 @@ function get_highest_price_listing($conn, $id)
 
 function get_cards_for_page($conn, $game_id, $set_id, $offset, $items_per_page)
 {
-  if ($set_id) {
-    $query = "SELECT c.*, s.name AS set_name, 
-                  MIN(cl.price) AS min_price,
-                  AVG(cl.price) AS avg_price,
-                  COUNT(DISTINCT cl.store_id) AS total_stores
-                  FROM cards c
-                  JOIN sets s ON c.set_id = s.id 
-                  LEFT JOIN card_listings cl ON c.id = cl.card_id
-                  WHERE c.set_id = :set_id
-                  GROUP BY c.id
-                  LIMIT :offset, :items_per_page";
-    $params = [':set_id' => $set_id];
-  } elseif ($game_id) {
-    $query = "SELECT c.*, s.name AS set_name, 
-                  MIN(cl.price) AS min_price,
-                  AVG(cl.price) AS avg_price,
-                  COUNT(DISTINCT cl.store_id) AS total_stores
-                  FROM cards c
-                  JOIN sets s ON c.set_id = s.id 
-                  LEFT JOIN card_listings cl ON c.id = cl.card_id
-                  WHERE s.game_id = :game_id
-                  GROUP BY c.id
-                  LIMIT :offset, :items_per_page";
-    $params = [':game_id' => $game_id];
-  } else {
-    return [];
-  }
+  $where_clause = $set_id ? "WHERE c.set_id = :set_id" : "WHERE s.game_id = :game_id";
+  $query = "
+        SELECT c.id, c.name, c.image_filename, c.rarity, c.card_number, s.name as set_name
+        FROM cards c
+        JOIN sets s ON c.set_id = s.id
+        $where_clause
+        ORDER BY c.id DESC
+        LIMIT :offset, :items_per_page
+    ";
 
   $stmt = $conn->prepare($query);
-  $params[':offset'] = $offset;
-  $params[':items_per_page'] = $items_per_page;
-  foreach ($params as $key => &$val) {
-    $stmt->bindParam($key, $val, PDO::PARAM_INT);
+  if ($set_id) {
+    $stmt->bindParam(':set_id', $set_id, PDO::PARAM_INT);
+  } else {
+    $stmt->bindParam(':game_id', $game_id, PDO::PARAM_INT);
   }
+  $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+  $stmt->bindParam(':items_per_page', $items_per_page, PDO::PARAM_INT);
   $stmt->execute();
-  return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+  $cards = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+  // Fetch listings for each card
+  foreach ($cards as &$card) {
+    $query = "
+            SELECT cl.price, cl.quantity, s.name as store_name
+            FROM card_listings cl
+            JOIN stores s ON cl.store_id = s.id
+            WHERE cl.card_id = :card_id
+        ";
+    $stmt = $conn->prepare($query);
+    $stmt->bindParam(':card_id', $card['id'], PDO::PARAM_INT);
+    $stmt->execute();
+    $card['listings'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  return $cards;
 }
 
-function get_total_cards($conn, $game_id, $set_id)
+function get_total_cards($conn, $game_id = null, $set_id = null)
 {
+  $sql = "SELECT COUNT(*) FROM cards";
+  $params = [];
+
   if ($set_id) {
-    $count_query = "SELECT COUNT(*) as total FROM cards WHERE set_id = :id";
-    $param = $set_id;
+    $sql .= " WHERE set_id = ?";
+    $params[] = $set_id;
   } elseif ($game_id) {
-    $count_query = "SELECT COUNT(*) as total FROM cards c JOIN sets s ON c.set_id = s.id WHERE s.game_id = :id";
-    $param = $game_id;
-  } else {
-    return 0;
+    $sql .= " WHERE set_id IN (SELECT id FROM sets WHERE game_id = ?)";
+    $params[] = $game_id;
   }
 
-  $count_stmt = $conn->prepare($count_query);
-  $count_stmt->bindParam(':id', $param, PDO::PARAM_INT);
-  $count_stmt->execute();
-  return $count_stmt->fetch(PDO::FETCH_ASSOC)['total'];
+  $stmt = $conn->prepare($sql);
+  $stmt->execute($params);
+  return $stmt->fetchColumn();
 }
 
 function get_game_set_info($conn, $game_id, $set_id)
@@ -143,4 +144,22 @@ function get_game_set_info($conn, $game_id, $set_id)
   $info_stmt->bindParam(':id', $param, PDO::PARAM_INT);
   $info_stmt->execute();
   return $info_stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function get_all_cards_for_page($conn, $offset, $items_per_page)
+{
+  $sql = "SELECT c.*, s.name as set_name, g.name as game_name,
+                   (SELECT COUNT(*) FROM card_listings cl WHERE cl.card_id = c.id) as listing_count,
+                   (SELECT MIN(price) FROM card_listings cl WHERE cl.card_id = c.id) as lowest_price
+            FROM cards c
+            JOIN sets s ON c.set_id = s.id
+            JOIN games g ON s.game_id = g.id
+            ORDER BY c.id DESC
+            LIMIT :limit OFFSET :offset";
+
+  $stmt = $conn->prepare($sql);
+  $stmt->bindValue(':limit', $items_per_page, PDO::PARAM_INT);
+  $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+  $stmt->execute();
+  return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }

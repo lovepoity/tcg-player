@@ -42,6 +42,19 @@ $recommended_cards = get_recommended_cards($conn, $card['set_id'], $id, 12);
 // Lấy thông tin về listing có giá cao nhất
 $highest_price_listing = get_highest_price_listing($conn, $id);
 
+// Đếm số lượng cửa hàng còn hàng và tìm giá thấp nhất
+$stores_with_stock = 0;
+$lowest_price = PHP_FLOAT_MAX;
+
+foreach ($listings as $listing) {
+  if ($listing['quantity'] > 0) {
+    $stores_with_stock++;
+    if ($listing['price'] < $lowest_price) {
+      $lowest_price = $listing['price'];
+    }
+  }
+}
+
 ?>
 <!-- HTML -->
 <div class="card__details">
@@ -66,9 +79,15 @@ $highest_price_listing = get_highest_price_listing($conn, $id);
     </div>
     <!-- END FILTER -->
     <div class="listing--price">
-      <?php if ($card['total_stores'] > 0): ?>
-        <p style="font-weight: bold; text-decoration: underline;" class="product__listing"><?php echo $card['total_stores']; ?> Listings</p>
-        <p>As low as $<?php echo formatNumber($card['market_price'], 2); ?></p>
+      <?php
+      $available_listings = array_filter($listings, function ($listing) {
+        return $listing['quantity'] > 0;
+      });
+      $total_available = count($available_listings);
+      ?>
+      <?php if ($total_available > 0): ?>
+        <p style="font-weight: bold; text-decoration: underline;" class="product__listing"><?php echo $total_available; ?> Listings</p>
+        <p>As low as $<?php echo formatNumber(min(array_column($available_listings, 'price')), 2); ?></p>
       <?php else: ?>
         <p style="font-weight: bold; text-decoration: underline;" class="product__listing">Out of Stock</p>
       <?php endif; ?>
@@ -115,41 +134,49 @@ $highest_price_listing = get_highest_price_listing($conn, $id);
           </div>
           <div class="detail-info__breakdown-item">
             <div class="details-info__spotlight">
-              <p class="details-info__spotlight-title">Near Mint Foil</p>
+              <?php
+              $available_listings = array_filter($listings, function ($listing) {
+                return $listing['quantity'] > 0;
+              });
+
+              $highest_price_listing = null;
+              $highest_price = 0;
+
+              foreach ($available_listings as $listing) {
+                if ($listing['price'] > $highest_price) {
+                  $highest_price = $listing['price'];
+                  $highest_price_listing = $listing;
+                }
+              }
+              ?>
               <?php if ($highest_price_listing): ?>
+                <p class="details-info__spotlight-title">Near Mint Foil</p>
                 <p class="details-info__spotlight-price">$<?php echo formatNumber($highest_price_listing['price'], 2); ?>
                   <span style="font-size: 1.2rem; font-weight: 400;">+
-                    <?php echo ($highest_price_listing['shipping'] > 0) ? '$' . formatNumber($highest_price_listing['shipping'], 2) : 'included'; ?> shipping
+                    <?php echo ($highest_price_listing['shipping'] > 0) ? '$' . formatNumber($highest_price_listing['shipping'], 2) . ' shipping' : 'Free shipping'; ?>
                   </span>
                 </p>
                 <p class="details-info__spotlight-sold">Sold by <a style="text-decoration: underline;" href="#"><?php echo e($highest_price_listing['store_name']); ?></a></p>
                 <!-- QUANTITY -->
                 <div class="details-info__spotlight-btn">
-                  <?php
-                  $quantity = $highest_price_listing['quantity'];
-                  $listing_id = $highest_price_listing['id'];
-                  ?>
-                  <select name="quantity" id="quantity_<?php echo $listing_id; ?>" <?php echo ($quantity === 0) ? 'disabled' : ''; ?>>
-                    <?php if ($quantity === 0): ?>
-                      <option value="0">0</option>
-                    <?php else: ?>
-                      <?php
-                      $max_quantity = min($quantity, 100);
-                      for ($i = 1; $i <= $max_quantity; $i++):
-                      ?>
-                        <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
-                      <?php endfor; ?>
-                    <?php endif; ?>
+                  <select name="quantity" id="quantity_<?php echo $highest_price_listing['id']; ?>">
+                    <?php
+                    $max_quantity = min($highest_price_listing['quantity'], 100);
+                    for ($i = 1; $i <= $max_quantity; $i++):
+                    ?>
+                      <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+                    <?php endfor; ?>
                   </select>
                   <span class="item__listing">
-                    of <?php echo $quantity; ?>
+                    of <?php echo $highest_price_listing['quantity']; ?>
                   </span>
-                  <button class="add-to-cart-btn" data-listing-id="<?php echo $listing_id; ?>" <?php echo ($quantity === 0) ? 'disabled' : ''; ?>>
-                    <?php echo ($quantity === 0) ? 'Out of Stock' : 'Add to Cart'; ?>
+                  <button class="add-to-cart-btn" data-listing-id="<?php echo $highest_price_listing['id']; ?>">
+                    Add to Cart
                   </button>
                 </div>
               <?php else: ?>
-                <p class="details-info__spotlight-price">Currently Unavailable</p>
+                <p class="details-info__spotlight-title">Currently Unavailable</p>
+                <p class="details-info__spotlight-price">Out of Stock</p>
                 <p class="details-info__spotlight-sold">No sellers available at this time</p>
                 <div class="details-info__spotlight-btn">
                   <button disabled>Out of Stock</button>
@@ -164,9 +191,25 @@ $highest_price_listing = get_highest_price_listing($conn, $id);
               <!-- END PAYPAL -->
             </div>
             <!-- ALL LISTING -->
+            <?php
+            $available_listings = array_filter($listings, function ($listing) {
+              return $listing['quantity'] > 0;
+            });
+            $total_available = count($available_listings);
+            $lowest_price = $total_available > 0 ? min(array_column($available_listings, 'price')) : 0;
+            ?>
+
             <div class="details-info__all-listing">
-              <a class="details-info__all-listing-link" href="#listing">View <?php echo $card['total_stores']; ?> Other Listings</a>
-              <p class="details-info__all-listing-price">As low as $<?php echo formatNumber($card['market_price'], 2); ?></p>
+              <?php if ($total_available > 0): ?>
+                <a class="details-info__all-listing-link" href="#listing">
+                  View <?php echo $total_available; ?> Other Listing<?php echo $total_available > 1 ? 's' : ''; ?>
+                </a>
+                <p class="details-info__all-listing-price">
+                  As low as $<?php echo formatNumber($lowest_price, 2); ?>
+                </p>
+              <?php else: ?>
+                <p class="details-info__all-listing-price">Currently out of stock</p>
+              <?php endif; ?>
             </div>
             <!-- END ALL LISTING -->
             <!-- USER ACTION -->
@@ -186,8 +229,14 @@ $highest_price_listing = get_highest_price_listing($conn, $id);
       <div id="listing" class="card__detail-listing">
         <div class="listing__header">
           <div class="listing__header__left">
-            <?php if ($card['total_stores'] > 0 && $card['market_price'] > 0): ?>
-              <div class="listing__quantity"><?php echo $card['total_stores']; ?> Listings</div>
+            <?php
+            $available_listings = array_filter($listings, function ($listing) {
+              return $listing['quantity'] > 0;
+            });
+            $total_available = count($available_listings);
+            ?>
+            <?php if ($total_available > 0): ?>
+              <div class="listing__quantity"><?php echo $total_available; ?> Listings</div>
               <div class="listing__price">
                 As low as $<?php echo formatNumber($card['market_price'], 2); ?>
               </div>
@@ -206,7 +255,7 @@ $highest_price_listing = get_highest_price_listing($conn, $id);
             </select>
           </div>
         </div>
-        <?php foreach ($listings as $listing): ?>
+        <?php foreach ($available_listings as $listing): ?>
           <div class="listing__store">
             <div class="listing__store-name listing__store-item"><?php echo e($listing['store_name']); ?> <span><i class="fa-solid fa-star"></i> 99.9%
                 (10000+ Sales)</span></div>
@@ -222,23 +271,19 @@ $highest_price_listing = get_highest_price_listing($conn, $id);
               </div>
             </div>
             <div class="listing__store-quantity listing__store-item">
-              <select name="quantity" id="quantity_<?php echo $listing['id']; ?>" <?php echo ($listing['quantity'] === 0) ? 'disabled' : ''; ?>>
-                <?php if ($listing['quantity'] === 0): ?>
-                  <option value="0">0</option>
-                <?php else: ?>
-                  <?php
-                  $max_quantity = min($listing['quantity'], 100);
-                  for ($i = 1; $i <= $max_quantity; $i++):
-                  ?>
-                    <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
-                  <?php endfor; ?>
-                <?php endif; ?>
+              <select name="quantity" id="quantity_<?php echo $listing['id']; ?>">
+                <?php
+                $max_quantity = min($listing['quantity'], 100);
+                for ($i = 1; $i <= $max_quantity; $i++):
+                ?>
+                  <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+                <?php endfor; ?>
               </select>
               <span class="item__listing">
                 of <?php echo $listing['quantity']; ?>
               </span>
-              <button class="add-to-cart-btn" data-listing-id="<?php echo $listing['id']; ?>" <?php echo ($listing['quantity'] === 0) ? 'disabled' : ''; ?>>
-                <?php echo ($listing['quantity'] === 0) ? 'Out of Stock' : 'Add to Cart'; ?>
+              <button class="add-to-cart-btn" data-listing-id="<?php echo $listing['id']; ?>">
+                Add to Cart
               </button>
             </div>
           </div>
@@ -293,38 +338,44 @@ $highest_price_listing = get_highest_price_listing($conn, $id);
     </div>
     <script src="/public/js/sub_page.js"></script>
     <script>
-      console.log('Script is running');
-
       document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM is loaded');
         const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
-        console.log('Number of add to cart buttons:', addToCartButtons.length);
 
-        function showToast(message, duration = 3000) {
+        function showToast(message, duration = 4000) {
           const toast = document.getElementById('toast');
           const toastMessage = document.getElementById('toast-message');
+
+          // Reset the toast animation
+          toast.classList.remove('show');
+          void toast.offsetWidth; // Trigger reflow to restart the animation
+
           toastMessage.textContent = message;
-          toast.style.display = 'block';
+          toast.classList.add('show');
+
           setTimeout(() => {
-            toast.style.display = 'none';
+            toast.classList.remove('show');
           }, duration);
+        }
+
+        function updateCartCount(count) {
+          const cartCountElement = document.getElementById('cart-count');
+          if (cartCountElement) {
+            cartCountElement.textContent = count;
+          }
         }
 
         addToCartButtons.forEach(button => {
           button.addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('Button clicked');
             const listingId = this.dataset.listingId;
             const quantitySelect = document.getElementById(`quantity_${listingId}`);
             const quantity = quantitySelect.value;
-            console.log('Listing ID:', listingId, 'Quantity:', quantity);
 
             addToCart(listingId, quantity);
           });
         });
 
         function addToCart(listingId, quantity) {
-          console.log('Adding to cart:', listingId, quantity);
           fetch('/api/add_to_cart.php', {
               method: 'POST',
               headers: {
@@ -337,21 +388,55 @@ $highest_price_listing = get_highest_price_listing($conn, $id);
             })
             .then(response => response.json())
             .then(data => {
-              console.log('Response:', data);
               if (data.success) {
-                showToast('Item added to cart successfully!');
+                showToast('1 items added to cart.');
+                updateRemainingQuantity(listingId, data.remaining_quantity);
+                updateCartCount(data.unique_items_count); // Thêm dòng này
               } else {
-                showToast('Failed to add item to cart. ' + data.message);
+                showToast(' ' + data.message);
+                if (data.available_quantity !== undefined) {
+                  updateRemainingQuantity(listingId, data.available_quantity);
+                }
               }
             })
             .catch(error => {
-              console.error('Error:', error);
               showToast('An error occurred while adding the item to cart.');
             });
         }
+
+        function updateRemainingQuantity(listingId, remainingQuantity) {
+          const quantitySelect = document.getElementById(`quantity_${listingId}`);
+          const itemListing = quantitySelect.nextElementSibling;
+          const currentValue = parseInt(quantitySelect.value);
+
+          itemListing.textContent = `of ${remainingQuantity}`;
+
+          quantitySelect.innerHTML = '';
+          for (let i = 1; i <= Math.min(remainingQuantity, 100); i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = i;
+            if (i === currentValue) {
+              option.selected = true;
+            }
+            quantitySelect.appendChild(option);
+          }
+
+          if (currentValue > remainingQuantity) {
+            quantitySelect.value = remainingQuantity;
+          }
+
+          const addToCartBtn = quantitySelect.nextElementSibling.nextElementSibling;
+          if (remainingQuantity === 0) {
+            addToCartBtn.disabled = true;
+            addToCartBtn.textContent = 'Out of Stock';
+          } else {
+            addToCartBtn.disabled = false;
+            addToCartBtn.textContent = 'Add to Cart';
+          }
+        }
       });
     </script>
-    <!-- Phần recommend giữ nguyên như cũ -->
     <?php
     include '../includes/footer.php';
     ?>

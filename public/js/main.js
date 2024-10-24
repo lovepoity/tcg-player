@@ -131,4 +131,10 @@ document.addEventListener('DOMContentLoaded', function() {
       userMenu.style.display = 'none';
     }
   });
+  document.addEventListener('DOMContentLoaded', function() {
+    const cartCountElement = document.getElementById('cart-count');
+    if (cartCountElement && cartCountElement.textContent.trim() === '0') {
+      cartCountElement.style.display = 'none';
+    }
+  });
 });

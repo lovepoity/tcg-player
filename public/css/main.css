@@ -283,6 +283,14 @@ header{
   border: 1px solid rgb(0, 0, 0, 0.2);
   opacity: 0.95;
 }
+.header__cart #cart-count{
+  background-color: var(--blue-color);
+  color: var(--white-color);
+  padding:2px 7px;
+  border-radius: 45%;
+  margin-left: 5px;
+}
+
 
 /* ---------------------------------------------- */
 /* HEADER NAVBAR */

@@ -270,6 +270,8 @@ INSERT INTO `games` (`id`, `name`, `created_at`, `updated_at`) VALUES
 CREATE TABLE `orders` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
+  `first_name` varchar(100) NOT NULL,
+  `last_name` varchar(100) NOT NULL,
   `total_amount` decimal(10,2) NOT NULL,
   `shipping_fee` decimal(10,2) NOT NULL,
   `address` text NOT NULL,
@@ -280,9 +282,8 @@ CREATE TABLE `orders` (
   `phone` varchar(20) NOT NULL,
   `email` varchar(100) NOT NULL,
   `status` enum('pending','processing','shipped','delivered','cancelled') NOT NULL DEFAULT 'pending',
-  `payment_method` enum('paypal','visa_debit') NOT NULL,
+  `payment_method` enum('Paypal','Credit Card') NOT NULL,
   `payment_status` enum('pending','completed','failed','refunded') NOT NULL DEFAULT 'pending',
-  `notes` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

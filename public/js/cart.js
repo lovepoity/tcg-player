@@ -1,3 +1,17 @@
+// Thêm đoạn này ở đầu file, ngoài $(document).ready
+window.showToast = function(message, duration = 7000) {
+    const $toast = $('#toast');
+    $('#toast-message').text(message);
+    
+    $toast.removeClass('show');
+    $toast[0].offsetHeight;
+    $toast.addClass('show');
+    
+    setTimeout(function() {
+      $toast.removeClass('show');
+    }, duration);
+}
+
 $(document).ready(function() {
   function showToast(message, duration = 7000) {
     const $toast = $('#toast');
@@ -26,14 +40,10 @@ $(document).ready(function() {
         quantity: newQuantity
       },
       success: function(response) {
-        if (response.success) {
-          updatePackageSummary($package);
-          updateCartSummary();
-          showToast('Quantity updated successfully');
-          updateCartCount(response.unique_items_count);
-        } else {
-          showToast('Cannot update quantity: ' + response.message);
-        }
+        updatePackageSummary($package);
+        updateCartSummary();
+        showToast('Quantity updated successfully');
+        updateCartCount(response.unique_items_count);
       },
       error: function(jqXHR, textStatus, errorThrown) {
         showToast('An error occurred while updating the quantity. Please check the console for details.');
@@ -48,7 +58,8 @@ $(document).ready(function() {
       success: function(response) {
         if (response.success) {
           if (response.total_items === 0) {
-            location.reload();
+            // Thay vì reload, hiển thị giỏ hàng trống
+            showEmptyCart();
           } else {
             $('.item__breakdown-item:nth-child(1) p:last-child').text(response.total_packages);
             $('.item__breakdown-item:nth-child(2) p:last-child').text(response.total_items);
@@ -59,6 +70,20 @@ $(document).ready(function() {
         }
       }
     });
+  }
+
+  function showEmptyCart() {
+    $('.cart__container').html(`
+      <h1>Shopping Cart</h1>
+      <figure>
+        <img src="/public/images/img__empty-cart.svg" alt="Empty Cart">
+        <figcaption>Your cart is empty.</figcaption>
+      </figure>
+      <div class="btns__container">
+        <a href="/views/card_all.php?show_all=1"><button class="btn__continue-shopping">Continue Shopping</button></a>
+      </div>
+    `);
+    $('.cart__summary').hide();
   }
 
   function updatePackageSummary($package) {
@@ -84,7 +109,8 @@ $(document).ready(function() {
   }
 
   // Xóa sản phẩm
-  $(document).on('click', '.remove-item', function() {
+  $(document).on('click', '.remove-item', function(e) {
+    e.preventDefault();
     var cartId = $(this).data('cart-id');
     var $item = $(this).closest('.package-tab__content-wrapper');
     var $package = $item.closest('.package-tab');
@@ -102,6 +128,16 @@ $(document).ready(function() {
           updateCartSummary();
           showToast('Item removed from cart');
           updateCartCount(response.unique_items_count);
+          
+          // Kiểm tra nếu package trống, xóa package
+          if ($package.find('.package-tab__content-wrapper').length === 0) {
+            $package.remove();
+          }
+          
+          // Kiểm tra nếu giỏ hàng trống, hiển thị giao diện giỏ hàng trống
+          if (response.total_items === 0) {
+            showEmptyCart();
+          }
         } else {
           showToast('Cannot remove item: ' + response.message);
         }
@@ -113,13 +149,15 @@ $(document).ready(function() {
   });
 
   // Xóa toàn bộ giỏ hàng
-  $('.clear__cart').click(function() {
+  $('.clear__cart').click(function(e) {
+    e.preventDefault();
     $.ajax({
       url: '/api/clear_cart.php',
       method: 'POST',
       success: function(response) {
         if (response.success) {
-          location.reload();
+          showEmptyCart();
+          updateCartCount(0);
           showToast('Cart cleared successfully');
         } else {
           showToast('Cannot clear cart: ' + response.message);
@@ -132,7 +170,8 @@ $(document).ready(function() {
   });
 
   // Remove Package button
-  $(document).on('click', '.remove-package', function() {
+  $(document).on('click', '.remove-package', function(e) {
+    e.preventDefault();
     var storeId = $(this).data('store-id');
     var $package = $(this).closest('.package-tab');
 

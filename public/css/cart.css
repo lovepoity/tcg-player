@@ -73,7 +73,7 @@
   height: 40px;
   cursor: pointer;
   font-size: 1.6rem;
-  font-weight: 600;
+  font-weight: 550;
 }
 
 .cart__container .btns__container .btn__signup {
@@ -336,7 +336,7 @@
 .cart__summary button, .checkout__button-link{
   width: 100%;
   height: 48px;
-  border-radius: 8px;
+  border-radius: 5px;
   border: none;
   cursor: pointer;
   transition: all 0.1s ease;
@@ -347,21 +347,16 @@
   background-color: var(--blue-color);
   color: var(--white-color);
   font-size: 1.6rem;
-  font-weight: 600;
+  font-weight: 550;
 }
 
 .checkout__button:hover{
   opacity: 0.9;
 }
 
-.paypal__button{
-  background: #ffc439;
-  display:grid;
-  place-items: center;
-}
-
-.paypal__button:hover{
-  background: #f3ba38;
+#paypal-button-container {
+  width: 100%;
+  margin-bottom: 8px;
 }
 
 .cart__summary button img {

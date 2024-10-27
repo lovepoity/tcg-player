@@ -15,11 +15,9 @@ try {
   $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
   $stmt->execute();
 
-  $total_items = getCartItemCount($conn, $_SESSION['user_id']);
   echo json_encode([
     'success' => true,
-    'message' => 'Cart cleared successfully',
-    'total_items' => $total_items
+    'message' => 'Cart cleared successfully'
   ]);
 } catch (PDOException $e) {
   echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);

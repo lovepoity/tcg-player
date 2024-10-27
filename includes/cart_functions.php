@@ -7,3 +7,11 @@ function getCartItemCount($conn, $user_id)
   $result = $stmt->fetch(PDO::FETCH_ASSOC);
   return $result['unique_items'];
 }
+
+function getUniqueCartItemCount($conn, $user_id)
+{
+  $stmt = $conn->prepare("SELECT COUNT(DISTINCT card_listing_id) as count FROM cart WHERE user_id = :user_id");
+  $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+  $stmt->execute();
+  return $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+}

@@ -15,12 +15,27 @@ try {
   $user_id = $_SESSION['user_id'];
   $payment_method = $data['paymentMethod'];
 
-  $cart_items = $_SESSION['cart_items'] ?? [];
-  $shipping_info = $_SESSION['shipping_info'] ?? [];
+  // Lấy thông tin giỏ hàng
+  $stmt = $conn->prepare("
+        SELECT c.id as cart_id, c.quantity, cl.id as listing_id, cl.price, cl.shipping, 
+               cd.name, s.id as store_id, s.name as store_name
+        FROM cart c
+        JOIN card_listings cl ON c.card_listing_id = cl.id
+        JOIN cards cd ON cl.card_id = cd.id
+        JOIN stores s ON cl.store_id = s.id
+        WHERE c.user_id = :user_id
+    ");
+  $stmt->execute([':user_id' => $user_id]);
+  $cart_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-  if (empty($cart_items) || empty($shipping_info)) {
-    throw new Exception('Empty cart or missing shipping information');
+  if (empty($cart_items)) {
+    throw new Exception('Empty cart');
   }
+
+  // Lấy thông tin người dùng
+  $stmt = $conn->prepare("SELECT * FROM users WHERE id = :user_id");
+  $stmt->execute([':user_id' => $user_id]);
+  $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
   $total_amount = 0;
   $total_shipping = 0;
@@ -43,13 +58,13 @@ try {
     ':user_id' => $user_id,
     ':total_amount' => $grand_total,
     ':shipping_fee' => $total_shipping,
-    ':address' => $shipping_info['address_line_1'] . ' ' . $shipping_info['address_line_2'],
-    ':city' => $shipping_info['city'],
-    ':state' => $shipping_info['state'],
-    ':postal_code' => $shipping_info['zip_code'],
-    ':country' => $shipping_info['country'],
-    ':phone' => $shipping_info['phone'],
-    ':email' => $_SESSION['user_email'],
+    ':address' => $user['address'],
+    ':city' => $user['city'],
+    ':state' => $user['state'],
+    ':postal_code' => $user['postal_code'],
+    ':country' => $user['country'],
+    ':phone' => $user['phone'],
+    ':email' => $user['email'],
     ':payment_method' => $payment_method
   ]);
 
@@ -83,9 +98,6 @@ try {
 
   $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = :user_id");
   $stmt->execute([':user_id' => $user_id]);
-
-  unset($_SESSION['cart_items']);
-  unset($_SESSION['shipping_info']);
 
   echo json_encode(['success' => true, 'order_id' => $order_id]);
 } catch (Exception $e) {

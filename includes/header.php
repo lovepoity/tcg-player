@@ -137,6 +137,41 @@ function getCartItemCount($conn, $user_id)
 </head>
 
 <body>
+  <!-- PRELOADER -->
+  <div class="preloader">
+    <div class="boxes">
+      <div class="box">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <div class="box">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <div class="box">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <div class="box">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.onload = function() {
+      document.querySelector('.preloader').style.display = 'none';
+    };
+  </script>
   <!-- HEADER -->
   <header id="header">
     <div class="header__mobile-menu">

@@ -57,21 +57,40 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // Lấy thông tin giỏ hàng
 $stmt = $conn->prepare("
-    SELECT SUM(cl.price * c.quantity) as subtotal, 
-           COUNT(DISTINCT cl.store_id) as package_count,
-           SUM(c.quantity) as total_items,
-           MAX(cl.shipping) as shipping
+    SELECT c.id as cart_id, c.quantity, cl.id as listing_id, cl.price, cl.shipping, 
+           cd.name, cd.image_filename, s.name as set_name, g.name as game_name,
+           st.id as store_id, st.name as store_name
     FROM cart c
     JOIN card_listings cl ON c.card_listing_id = cl.id
+    JOIN cards cd ON cl.card_id = cd.id
+    JOIN sets s ON cd.set_id = s.id
+    JOIN games g ON s.game_id = g.id
+    JOIN stores st ON cl.store_id = st.id
     WHERE c.user_id = :user_id
 ");
 $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
 $stmt->execute();
-$cart_summary = $stmt->fetch(PDO::FETCH_ASSOC);
+$cart_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$subtotal = $cart_summary['subtotal'] ?? 0;
-$shipping = $cart_summary['shipping'] ?? 0;
+// Tính toán tổng
+$subtotal = 0;
+$shipping = 0;
+$total_items = 0;
+$stores = [];
+
+foreach ($cart_items as $item) {
+  $subtotal += $item['price'] * $item['quantity'];
+  $total_items += $item['quantity'];
+
+  // Nếu cửa hàng chưa được tính phí vận chuyển, thêm vào
+  if (!isset($stores[$item['store_id']])) {
+    $stores[$item['store_id']] = $item['shipping'];
+    $shipping += $item['shipping'];
+  }
+}
+
 $total = $subtotal + $shipping;
+$package_count = count($stores);
 
 include '../../includes/header.php';
 ?>
@@ -133,11 +152,11 @@ include '../../includes/header.php';
         <h2>Shopping Cart Summary</h2>
         <div class="checkout__summary-item">
           <p>Number of Packages:</p>
-          <p><?php echo $cart_summary['package_count']; ?></p>
+          <p><?php echo $package_count; ?></p>
         </div>
         <div class="checkout__summary-item">
           <p>Number of Items:</p>
-          <p><?php echo $cart_summary['total_items']; ?></p>
+          <p><?php echo $total_items; ?></p>
         </div>
         <div class="checkout__summary-item">
           <p>Items:</p>

@@ -18,16 +18,15 @@ try {
   $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
   $stmt->execute();
 
-  if ($stmt->rowCount() > 0) {
-    $total_items = getCartItemCount($conn, $_SESSION['user_id']);
-    echo json_encode([
-      'success' => true,
-      'message' => 'Item removed from cart successfully',
-      'unique_items_count' => $total_items
-    ]);
-  } else {
-    echo json_encode(['success' => false, 'message' => 'Item not found in cart']);
-  }
+  $total_items = getCartItemCount($conn, $_SESSION['user_id']);
+  $unique_items_count = getUniqueCartItemCount($conn, $_SESSION['user_id']);
+
+  echo json_encode([
+    'success' => true,
+    'message' => 'Item removed from cart successfully',
+    'total_items' => $total_items,
+    'unique_items_count' => $unique_items_count
+  ]);
 } catch (PDOException $e) {
   echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
 }

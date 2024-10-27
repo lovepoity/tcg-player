@@ -20,16 +20,19 @@ try {
   $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
   $stmt->execute();
 
-  if ($stmt->rowCount() > 0) {
-    $total_items = getCartItemCount($conn, $_SESSION['user_id']);
-    echo json_encode([
-      'success' => true,
-      'message' => 'Cart updated successfully',
-      'total_items' => $total_items
-    ]);
-  } else {
-    echo json_encode(['success' => false, 'message' => 'No changes made to the cart']);
-  }
+  $total_items = getCartItemCount($conn, $_SESSION['user_id']);
+
+  $stmt = $conn->prepare("SELECT COUNT(DISTINCT card_listing_id) as unique_count FROM cart WHERE user_id = :user_id");
+  $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+  $stmt->execute();
+  $unique_items_count = $stmt->fetch(PDO::FETCH_ASSOC)['unique_count'];
+
+  echo json_encode([
+    'success' => true,
+    'message' => 'Cart updated successfully',
+    'total_items' => $total_items,
+    'unique_items_count' => $unique_items_count
+  ]);
 } catch (PDOException $e) {
   echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
 }

@@ -1,6 +1,7 @@
   <?php
   include '../../includes/header.php';
   include '../../includes/db_connect.php';
+  include '../../includes/config.php';
 
   // Hàm hỗ trợ
   function e($string)
@@ -45,7 +46,7 @@
   // Lấy thông tin giỏ hàng
   $stmt = $conn->prepare("
     SELECT c.id as cart_id, c.quantity, cl.id as listing_id, cl.price, cl.shipping, 
-           cd.name, cd.image_filename, cd.set_id, s.name as set_name, g.name as game_name,
+           cd.id as card_id, cd.name, cd.image_filename, cd.set_id, s.name as set_name, g.name as game_name,
            cd.rarity, cd.card_number, st.id as store_id, st.name as store_name,
            cl.quantity as available_quantity
     FROM cart c
@@ -138,7 +139,11 @@
                         <div class="package-tab__item-details">
                           <div class="package-tab__item-details-wrapper beet--ween">
                             <div class="package-tab__expanded-details-container">
-                              <p class="package-tab__name"><?php echo e($item['name']); ?></p>
+                              <p class="package-tab__name">
+                                <a href="/views/card_details.php?id=<?php echo $item['card_id']; ?>">
+                                  <?php echo e($item['name']); ?>
+                                </a>
+                              </p>
                               <p class="package-tab__desc">
                                 <span><?php echo e($item['set_name']); ?></span>,
                                 <span><?php echo e($item['game_name']); ?></span>,
@@ -224,7 +229,7 @@
             <a href="/views/cart/shipping.php" class="checkout__button-link">
               <button class="checkout__button">Check Out</button>
             </a>
-            <button class="paypal__button"><img src="/public/images/paypal.webp" alt="Paypal"></button>
+            <div id="paypal-button-container"></div>
             <!-- PAYPAL -->
             <div class="details-info__paypal">
               <img src="/public/images/paypal.webp" alt="Paypal">Pay in 4 interest-free
@@ -245,6 +250,16 @@
       <p id="toast-message"></p>
     </div>
   </div>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="/public/js/cart.js"></script>
+
+  <!-- Thêm đoạn script này vào cuối file, trước đóng thẻ body -->
+  <?php if (!$cart_is_empty): ?>
+    <script src="https://www.paypal.com/sdk/js?client-id=<?php echo PAYPAL_CLIENT_ID; ?>&currency=USD"></script>
+    <script>
+      var grandTotal = <?php echo json_encode($grand_total); ?>;
+    </script>
+    <script src="/public/js/paypal-direct-checkout.js"></script>
+  <?php endif; ?>
 
   <?php include '../../includes/footer.php'; ?>

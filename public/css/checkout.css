@@ -120,6 +120,7 @@
 }
 
 .checkout__form button {
+  font-family: "Inter", sans-serif;
   cursor: pointer;
   margin-top: 24px;
   padding: 9px 20px;
@@ -416,7 +417,7 @@
 .confirm__block {
   width: 700px;
 }
-.confirm__block h2 {
+.confirm__block h2, .confirm__table h2 {
   font-size: 1.8rem;
   font-weight: 500;
   color: var(--black-color);
@@ -451,47 +452,54 @@
 /* ORDER ITEMS */
 .confirm__table {
   width: 700px;
-}
-
-.confirm__table h2 {
-  font-size: 1.8rem;
-  font-weight: 500;
-  color: var(--black-color);
-  text-align: left;
-  margin-bottom: 8px;
-}
-.confirm__table table {
-  box-shadow: none;
-  border-radius: 0;
-}
-.confirm__table img {
-  width: 50px;
-}
-
-.confirm__table table {
-  width: 100%;
   border-collapse: collapse;
-  text-align: center;
+  margin-bottom: 24px;
 }
+
 .confirm__table th, .confirm__table td {
-  border: 0.3px solid rgba(66, 66, 66, 0.1);
+  border: 1px solid #ddd;
   padding: 8px;
   font-size: 1.2rem;
 }
+
 .confirm__table th {
   background-color: #f2f2f2;
   font-weight: bold;
   padding: 3px 0;
 }
-
 .confirm__table td {
-  padding: 8px;
-}
-.confirm__table th {
-  padding: 3px 0;
+  background-color: var(--white-color);
 }
 .confirm__table th:nth-child(1) {
-  width: 20%;
+  width: 40%;
+}
+
+.confirm__table th:nth-child(3),
+.confirm__table th:nth-child(4),
+.confirm__table th:nth-child(5) {
+  width: 11%;
+}
+
+.confirm__table td:nth-child(3),
+.confirm__table td:nth-child(4),
+.confirm__table td:nth-child(5) {
+  text-align: center;
+}
+
+.confirm__table .item-info {
+  display: flex;
+  align-items: center;
+}
+
+.confirm__table .item-info img {
+  margin-right: 10px;
+  width: 50px;
+  height: auto;
+}
+
+.confirm__table .item-info div {
+  display: flex;
+  flex-direction: column;
 }
 
 /* ----------------------------------------------------- */
@@ -500,7 +508,7 @@
   background-color: var(--blue-color);
   color: var(--white-color) !important;
   padding: 9px 20px;
-  border-radius: 8px;
+  border-radius: 4px;
   font-size: 1.6rem;
   font-weight: 550;
   height: 40px;

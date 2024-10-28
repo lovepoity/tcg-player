@@ -9,13 +9,17 @@
   padding: 10px 30px;
   margin-bottom: 15px;
 }
-.sub__location a{
-  color: var(--gray-color);
+.sub__location-link {
+  color: var(--gray-color) !important;
   text-decoration: underline;
   &:hover{
     color: var(--link-color);
   } 
 }
+.sub__location-current {
+  font-weight: bold;
+}
+
 .sub__location i{
   color: var(--gray-color);
   font-size: 1.1rem;

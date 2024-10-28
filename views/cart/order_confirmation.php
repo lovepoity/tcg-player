@@ -10,6 +10,25 @@ if (!isset($_SESSION['user_id']) || !isset($_GET['order_id'])) {
 $user_id = $_SESSION['user_id'];
 $order_id = $_GET['order_id'];
 
+// Kiểm tra xem đơn hàng có thuộc về user hiện tại không
+$stmt = $conn->prepare("
+    SELECT COUNT(*) as count 
+    FROM orders 
+    WHERE id = :order_id AND user_id = :user_id
+");
+$stmt->execute([
+  ':order_id' => $order_id,
+  ':user_id' => $user_id
+]);
+$result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if ($result['count'] == 0) {
+  // Nếu không tìm thấy đơn hàng hoặc đơn hàng không thuộc về user này
+  $_SESSION['error'] = "You don't have permission to view this order.";
+  header('Location: /index.php');
+  exit;
+}
+
 // Get order information
 $stmt = $conn->prepare("
     SELECT * FROM orders
@@ -25,11 +44,15 @@ if (!$order) {
 
 // Lấy chi tiết đơn hàng
 $stmt = $conn->prepare("
-    SELECT oi.*, c.name, c.image_filename, s.name as store_name, cl.shipping
+    SELECT oi.*, c.name, c.image_filename, c.rarity, c.card_number, c.subtype, c.id as card_id,
+           s.name as store_name, cl.shipping,
+           sets.name as set_name, g.name as game_name
     FROM order_items oi
     JOIN card_listings cl ON oi.card_listing_id = cl.id
     JOIN cards c ON cl.card_id = c.id
     JOIN stores s ON oi.store_id = s.id
+    LEFT JOIN sets ON c.set_id = sets.id
+    LEFT JOIN games g ON sets.game_id = g.id
     WHERE oi.order_id = :order_id
 ");
 $stmt->execute([':order_id' => $order_id]);
@@ -90,7 +113,7 @@ unset($_SESSION['order_shipping_info']);
       </div>
     </div>
     <!-- delivery information -->
-    <div class="confirm__block">
+    <div class="confirm__block margin-bottom">
       <h2>Delivery Information</h2>
       <div class="confirm__box">
         <div class="delivery-information__content-item text--custom">
@@ -118,28 +141,53 @@ unset($_SESSION['order_shipping_info']);
     <!-- ORDER ITEMS -->
     <div class="confirm__table margin-bottom">
       <h2>Order Items</h2>
-      <table class="confirm__box">
-        <thead>
-          <tr>
-            <th>Image</th>
-            <th>Name</th>
-            <th>Store</th>
-            <th>Quantity</th>
-            <th>Price + Shipping</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php foreach ($order_items as $item): ?>
+      <?php
+      $grouped_items = [];
+      foreach ($order_items as $item) {
+        $grouped_items[$item['store_name']][] = $item;
+      }
+      ?>
+
+      <?php foreach ($grouped_items as $store_name => $items): ?>
+        <h3><?php echo htmlspecialchars($store_name); ?></h3>
+        <p class="shipped-by">Shipped by <?php echo htmlspecialchars($store_name); ?></p>
+        <table class="order-table">
+          <thead>
             <tr>
-              <td><img src="/public/images/product/<?php echo htmlspecialchars($item['image_filename']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>"></td>
-              <td><?php echo htmlspecialchars($item['name']); ?></td>
-              <td><?php echo htmlspecialchars($item['store_name']); ?></td>
-              <td><?php echo htmlspecialchars($item['quantity']); ?></td>
-              <td>$<?php echo number_format($item['price'], 2); ?> + $<?php echo number_format($item['shipping'], 2); ?></td>
+              <th>Items</th>
+              <th>Details</th>
+              <th>Price</th>
+              <th>Shipping</th>
+              <th>Quantity</th>
             </tr>
-          <?php endforeach; ?>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <?php foreach ($items as $item): ?>
+              <tr>
+                <td>
+                  <div class="item-info">
+                    <img src="/public/images/product/<?php echo htmlspecialchars($item['image_filename']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>">
+                    <div>
+                      <a target="_blank" href="/views/card_details.php?id=<?php echo $item['card_id']; ?>">
+                        <p style="color: var(--blue-color); font-weight: 500;"><?php echo htmlspecialchars($item['name']); ?></p>
+                      </a>
+                      <p><?php echo htmlspecialchars($item['set_name'] ?? 'Unknown Set') . ' - ' . htmlspecialchars($item['game_name'] ?? 'Unknown Game'); ?></p>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div><?php echo htmlspecialchars($item['rarity'] ?? 'Unknown'); ?></div>
+                  <div><?php echo htmlspecialchars($item['card_number'] ?? 'Unknown'); ?></div>
+                  <div><?php echo htmlspecialchars($item['subtype'] ?? 'Unknown'); ?></div>
+                </td>
+                <td>$<?php echo number_format($item['price'], 2); ?></td>
+                <td>$<?php echo number_format($item['shipping'], 2); ?></td>
+                <td><?php echo $item['quantity']; ?></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      <?php endforeach; ?>
     </div>
     <!-- CONTINUE SHOPPING -->
     <div class="continue-shopping">

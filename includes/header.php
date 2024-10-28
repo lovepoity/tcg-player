@@ -207,10 +207,10 @@ function getCartItemCount($conn, $user_id)
               <span class="header__welcome user__menu__welcome">Welcome Back, <p><?php echo htmlspecialchars($_SESSION['user_email']); ?></p></span>
               <div class="user__menu__list">
                 <div class="user__menu__left">
-                  <h4><a href="#">Your Account</a></h4>
+                  <h4><a href="/views/users/user.php">Your Account</a></h4>
                   <ul>
-                    <li><a href="#">Account</a></li>
-                    <li><a href="#">Order History</a></li>
+                    <li><a href="/views/users/user.php">Account</a></li>
+                    <li><a href="/views/users/tab/order_history.php">Order History</a></li>
                     <li><a href="#">Account & Data</a></li>
                     <li><a href="#">Messages</a></li>
                     <li><a href="#">Your Collection</a></li>

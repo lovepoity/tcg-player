@@ -373,6 +373,10 @@ header{
   border-radius: 4px;
   border: 1px solid var(--border-color);
 }
+.header__user-menu>span>p{
+  color: #698FB1 !important;
+}
+
 .user__menu__list{
   display: flex;
 }

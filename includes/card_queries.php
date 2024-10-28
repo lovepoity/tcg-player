@@ -16,15 +16,18 @@ function get_card_details($conn, $id)
   return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-function get_card_listings($conn, $id, $limit = 5)
+function get_card_listings($conn, $id, $limit = 10, $sort = 'price_desc')
 {
+  $order_by = $sort === 'price_asc' ? 'ASC' : 'DESC';
+
   $listing_query = "SELECT cl.*, s.name as store_name, cl.shipping as shipping_cost
-                      FROM card_listings cl
-                      JOIN stores s ON cl.store_id = s.id
-                      WHERE cl.card_id = :card_id
-                      GROUP BY cl.store_id
-                      ORDER BY cl.price DESC
-                      LIMIT :limit";
+                    FROM card_listings cl
+                    JOIN stores s ON cl.store_id = s.id
+                    WHERE cl.card_id = :card_id
+                    GROUP BY cl.store_id
+                    ORDER BY cl.price $order_by
+                    LIMIT :limit";
+
   $listing_stmt = $conn->prepare($listing_query);
   $listing_stmt->bindParam(':card_id', $id, PDO::PARAM_INT);
   $listing_stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
@@ -130,27 +133,39 @@ function get_total_cards($conn, $game_id = null, $set_id = null)
 function get_game_set_info($conn, $game_id, $set_id)
 {
   if ($set_id) {
+    // Khi có set_id, lấy thông tin set và game
     $info_query = "SELECT s.name AS set_name, g.id AS game_id, g.name AS game_name 
-                       FROM sets s 
-                       JOIN games g ON s.game_id = g.id 
-                       WHERE s.id = :id";
+                   FROM sets s 
+                   JOIN games g ON s.game_id = g.id 
+                   WHERE s.id = :id";
     $param = $set_id;
-  } else {
-    $info_query = "SELECT id AS game_id, name AS game_name FROM games WHERE id = :id";
+  } else if ($game_id) {
+    // Khi chỉ có game_id, lấy thông tin game
+    $info_query = "SELECT id AS game_id, name AS game_name 
+                   FROM games 
+                   WHERE id = :id";
     $param = $game_id;
   }
 
   $info_stmt = $conn->prepare($info_query);
   $info_stmt->bindParam(':id', $param, PDO::PARAM_INT);
   $info_stmt->execute();
-  return $info_stmt->fetch(PDO::FETCH_ASSOC);
+  $result = $info_stmt->fetch(PDO::FETCH_ASSOC);
+
+  if (!$result) {
+    return [
+      'game_name' => 'Unknown Game',
+      'set_name' => null,
+      'game_id' => $game_id
+    ];
+  }
+
+  return $result;
 }
 
 function get_all_cards_for_page($conn, $offset, $items_per_page)
 {
-  $sql = "SELECT c.*, s.name as set_name, g.name as game_name,
-                   (SELECT COUNT(*) FROM card_listings cl WHERE cl.card_id = c.id) as listing_count,
-                   (SELECT MIN(price) FROM card_listings cl WHERE cl.card_id = c.id) as lowest_price
+  $sql = "SELECT c.*, s.name as set_name, g.name as game_name
             FROM cards c
             JOIN sets s ON c.set_id = s.id
             JOIN games g ON s.game_id = g.id
@@ -161,5 +176,21 @@ function get_all_cards_for_page($conn, $offset, $items_per_page)
   $stmt->bindValue(':limit', $items_per_page, PDO::PARAM_INT);
   $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
   $stmt->execute();
-  return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  $cards = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+  // Thêm listings cho mỗi card
+  foreach ($cards as &$card) {
+    $query = "
+            SELECT cl.price, cl.quantity, s.name as store_name
+            FROM card_listings cl
+            JOIN stores s ON cl.store_id = s.id
+            WHERE cl.card_id = :card_id
+        ";
+    $stmt = $conn->prepare($query);
+    $stmt->bindParam(':card_id', $card['id'], PDO::PARAM_INT);
+    $stmt->execute();
+    $card['listings'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  return $cards;
 }

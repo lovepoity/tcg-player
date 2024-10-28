@@ -88,6 +88,7 @@
   background-color: var(--blue-color);
   color: var(--white-color);
   width: 181px !important;
+  font-family: "Inter", sans-serif;
 }
 
 /* -------------------------------------------------- */
@@ -167,6 +168,10 @@
 
 .package-tab__item-details {
   width: 100%;
+}
+
+.package-tab__item-details a {
+  color: var(--blue-color);
 }
 
 .package-tab__item-details-wrapper {
@@ -344,6 +349,7 @@
 }
 
 .checkout__button{
+  font-family: "Inter", sans-serif;
   background-color: var(--blue-color);
   color: var(--white-color);
   font-size: 1.6rem;

@@ -50,12 +50,14 @@ try {
   $grand_total = $total_amount + $total_shipping;
 
   $stmt = $conn->prepare("
-        INSERT INTO orders (user_id, total_amount, shipping_fee, address, city, state, postal_code, country, phone, email, payment_method, payment_status)
-        VALUES (:user_id, :total_amount, :shipping_fee, :address, :city, :state, :postal_code, :country, :phone, :email, :payment_method, 'completed')
+        INSERT INTO orders (user_id, first_name, last_name, total_amount, shipping_fee, address, city, state, postal_code, country, phone, email, payment_method, payment_status)
+        VALUES (:user_id, :first_name, :last_name, :total_amount, :shipping_fee, :address, :city, :state, :postal_code, :country, :phone, :email, :payment_method, 'completed')
     ");
 
   $stmt->execute([
     ':user_id' => $user_id,
+    ':first_name' => $user['first_name'],
+    ':last_name' => $user['last_name'],
     ':total_amount' => $grand_total,
     ':shipping_fee' => $total_shipping,
     ':address' => $user['address'],

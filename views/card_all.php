@@ -89,15 +89,24 @@ $set_name = isset($info['set_name']) ? $info['set_name'] : null;
     <i class='bx bx-menu-alt-right'></i>
   </div>
   <div class="sub__location">
-    <a href="#">All Categories</a>
+    <a href="#" class="sub__location-link">All Categories</a>
     <i class="fa-solid fa-chevron-right"></i>
     <?php if ($show_all): ?>
-      <p>All Games and Sets</p>
+      <p class="sub__location-current">All Games and Sets</p>
     <?php else: ?>
-      <a href="/views/card_all.php?game_id=<?php echo $game_id; ?>"><?php echo htmlspecialchars($game_name); ?></a>
+      <?php
+      $breadcrumb_game_id = $set_id ? $info['game_id'] : $game_id;
+      ?>
       <?php if ($set_name): ?>
+        <!-- Khi đang ở trang set -->
+        <a href="/views/card_all.php?game_id=<?php echo $breadcrumb_game_id; ?>" class="sub__location-link">
+          <?php echo htmlspecialchars($game_name); ?>
+        </a>
         <i class="fa-solid fa-chevron-right"></i>
-        <p><?php echo htmlspecialchars($set_name); ?></p>
+        <p class="sub__location-current"><?php echo htmlspecialchars($set_name); ?></p>
+      <?php else: ?>
+        <!-- Khi đang ở trang game -->
+        <p class="sub__location-current"><?php echo htmlspecialchars($game_name); ?></p>
       <?php endif; ?>
     <?php endif; ?>
   </div>

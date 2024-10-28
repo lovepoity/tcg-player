@@ -96,11 +96,15 @@ foreach ($listings as $listing) {
   <!-- END NAVBAR SUB PAGE -->
   <!-- LOCATION -->
   <div class="sub__location">
-    <a href="#">All Categories</a>
+    <a href="#" class="sub__location-link">All Categories</a>
     <i class="fa-solid fa-chevron-right"></i>
-    <a href="/views/card_all.php?game_id=<?php echo $card['game_id']; ?>"><?php echo e($card['game_name']); ?></a>
+    <a href="/views/card_all.php?game_id=<?php echo $card['game_id']; ?>" class="sub__location-link">
+      <?php echo e($card['game_name']); ?>
+    </a>
     <i class="fa-solid fa-chevron-right"></i>
-    <a href="/views/card_all.php?set_id=<?php echo $card['set_id']; ?>"><?php echo e($card['set_name']); ?></a>
+    <a href="/views/card_all.php?set_id=<?php echo $card['set_id']; ?>" class="sub__location-link">
+      <?php echo e($card['set_name']); ?>
+    </a>
     <i class="fa-solid fa-chevron-right"></i>
     <p><?php echo e($card['name']); ?></p>
   </div>
@@ -337,106 +341,7 @@ foreach ($listings as $listing) {
       </div>
     </div>
     <script src="/public/js/sub_page.js"></script>
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
-
-        function showToast(message, duration = 4000) {
-          const toast = document.getElementById('toast');
-          const toastMessage = document.getElementById('toast-message');
-
-          // Reset the toast animation
-          toast.classList.remove('show');
-          void toast.offsetWidth; // Trigger reflow to restart the animation
-
-          toastMessage.textContent = message;
-          toast.classList.add('show');
-
-          setTimeout(() => {
-            toast.classList.remove('show');
-          }, duration);
-        }
-
-        function updateCartCount(count) {
-          const cartCountElement = document.getElementById('cart-count');
-          if (cartCountElement) {
-            cartCountElement.textContent = count;
-          }
-        }
-
-        addToCartButtons.forEach(button => {
-          button.addEventListener('click', function(e) {
-            e.preventDefault();
-            const listingId = this.dataset.listingId;
-            const quantitySelect = document.getElementById(`quantity_${listingId}`);
-            const quantity = quantitySelect.value;
-
-            addToCart(listingId, quantity);
-          });
-        });
-
-        function addToCart(listingId, quantity) {
-          fetch('/api/add_to_cart.php', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                listing_id: listingId,
-                quantity: quantity
-              })
-            })
-            .then(response => response.json())
-            .then(data => {
-              if (data.success) {
-                showToast('1 items added to cart.');
-                updateRemainingQuantity(listingId, data.remaining_quantity);
-                updateCartCount(data.unique_items_count); // Thêm dòng này
-              } else {
-                showToast(' ' + data.message);
-                if (data.available_quantity !== undefined) {
-                  updateRemainingQuantity(listingId, data.available_quantity);
-                }
-              }
-            })
-            .catch(error => {
-              showToast('An error occurred while adding the item to cart.');
-            });
-        }
-
-        function updateRemainingQuantity(listingId, remainingQuantity) {
-          const quantitySelect = document.getElementById(`quantity_${listingId}`);
-          const itemListing = quantitySelect.nextElementSibling;
-          const currentValue = parseInt(quantitySelect.value);
-
-          itemListing.textContent = `of ${remainingQuantity}`;
-
-          quantitySelect.innerHTML = '';
-          for (let i = 1; i <= Math.min(remainingQuantity, 100); i++) {
-            const option = document.createElement('option');
-            option.value = i;
-            option.textContent = i;
-            if (i === currentValue) {
-              option.selected = true;
-            }
-            quantitySelect.appendChild(option);
-          }
-
-          if (currentValue > remainingQuantity) {
-            quantitySelect.value = remainingQuantity;
-          }
-
-          const addToCartBtn = quantitySelect.nextElementSibling.nextElementSibling;
-          if (remainingQuantity === 0) {
-            addToCartBtn.disabled = true;
-            addToCartBtn.textContent = 'Out of Stock';
-          } else {
-            addToCartBtn.disabled = false;
-            addToCartBtn.textContent = 'Add to Cart';
-          }
-        }
-      });
-    </script>
+    <script src="/public/js/cards.js"></script>
     <?php
     include '../includes/footer.php';
     ?>

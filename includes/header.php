@@ -207,18 +207,18 @@ function getCartItemCount($conn, $user_id)
               <span class="header__welcome user__menu__welcome">Welcome Back, <p><?php echo htmlspecialchars($_SESSION['user_email']); ?></p></span>
               <div class="user__menu__list">
                 <div class="user__menu__left">
-                  <h4><a href="/views/users/user.php">Your Account</a></h4>
+                  <h4><a href="/views/users/user.php?tabs=my_account">Your Account</a></h4>
                   <ul>
-                    <li><a href="/views/users/user.php">Account</a></li>
-                    <li><a href="/views/users/tab/order_history.php">Order History</a></li>
-                    <li><a href="#">Account & Data</a></li>
-                    <li><a href="#">Messages</a></li>
-                    <li><a href="#">Your Collection</a></li>
-                    <li><a href="#">Manage Payment Methods</a></li>
-                    <li><a href="#">TCGplayer Subscription</a></li>
-                    <li><a href="#">Manage Addresses</a></li>
-                    <li><a href="#">Store Credit</a></li>
-                    <li><a href="#">Email Preferences</a></li>
+                    <li><a href="/views/users/user.php?tabs=my_account">Account</a></li>
+                    <li><a href="/views/users/user.php?tabs=user_history">Order History</a></li>
+                    <li><a href="/views/users/user.php?tabs=user_data">Account & Data</a></li>
+                    <li><a href="/views/users/user.php?tabs=user_address">Manage Addresses</a></li>
+                    <li><a href="/views/users/user.php?tabs=user_payment">Manage Payment Methods</a></li>
+                    <li><a href="/views/users/user.php?tabs=user_messages">Messages</a></li>
+                    <li><a href="/views/users/user.php?tabs=user_giftcard">Redeem Gift Card</a></li>
+                    <li><a href="/views/users/user.php?tabs=user_credit">Store Credit</a></li>
+                    <li><a href="/views/users/user.php?tabs=user_permission">Permissions</a></li>
+                    <li><a href="/views/users/user.php?tabs=user_email">Email Preferences</a></li>
                   </ul>
                 </div>
                 <div class="user__menu__right">

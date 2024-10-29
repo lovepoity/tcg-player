@@ -435,7 +435,7 @@
 /* ----------------------------------------------------- */
 /* ORDER DETAILS */
 .order-details__content-item:nth-child(2),
-.order-details__content-item:nth-child(4) {
+.order-details__content-item:nth-child(5) {
   border-top: 1px solid var(--border-color);
 }
 

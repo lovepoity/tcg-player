@@ -179,7 +179,7 @@
 
 /* ORDER DETAILS */
 .order-details__content-item:nth-child(2),
-.order-details__content-item:nth-child(5) {
+.order-details__content-item:nth-child(6) {
   border-top: 1px solid var(--border-color);
 }
 
@@ -281,4 +281,51 @@
 /* MARGIN UTILITY */
 .margin-bottom {
   margin-bottom: 24px;
+}
+
+/* --------------------------------- */
+/* ORDER STATUS */
+.order__status--active {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.order__status--active[data-status="Processing"] {
+  border: 2px solid var(--border-color);
+}
+
+.order__status--active[data-status="Picking"] {
+  background-color: rgba(224, 231, 255, 0.5);
+  border: 2px solid #E0E7FF;
+}
+.order__status--active[data-status="Packing"] {
+  background-color: rgba(255, 255, 0, 0.1);
+  border: 2px solid #fcf097;
+}
+
+.order__status--active[data-status="Shipping"] {
+  background-color: rgba(255, 165, 0, 0.1);
+  border: 2px solid #ffe7bc;
+}
+
+.order__status--active[data-status="Out for Delivery"] {
+  background-color: rgba(0, 59, 253, 0.1);
+  border: 2px solid #cce2fd;
+}
+
+.order__status--active[data-status="Delivered"] {
+  background-color: rgba(209, 250, 229, 0.5);
+  border: 2px solid #D1FAE5;
+}
+
+.order__status--active[data-status="Completed"] {
+  background-color: rgba(57, 255, 20, 0.2);
+  border: 2px solid #c8f7c0;
+}
+
+.order__status--active[data-status="Cancelled"] {
+  background-color: rgba(254, 226, 226, 0.5);
+  border: 2px solid #FEE2E2;
 }

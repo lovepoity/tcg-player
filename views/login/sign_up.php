@@ -41,12 +41,12 @@ handleSignUp($conn);
             <input autocomplete="off" type="password" name="password" id="password" required>
             <i class="fas fa-eye-slash password__toggle"></i>
           </div>
-        </div>
-        <div class="form__input">
-          <label for="confirm-password">Confirm Password</label>
-          <div class="password__input">
-            <input autocomplete="off" type="password" name="confirm-password" id="confirm-password" required>
-            <i class="fas fa-eye-slash password__toggle"></i>
+          <div class="password-requirements">
+            <span>At least:</span>
+            <span id="length" class="requirement">8 characters &nbsp;- </span>
+            <span id="lowercase" class="requirement">1 lowercase &nbsp;- </span>
+            <span id="number" class="requirement">1 number &nbsp;- </span>
+            <span id="uppercase" class="requirement">1 uppercase</span>
           </div>
         </div>
         <button id="submit-btn" class="login__btn login__btn--signup" type="submit">Create Account</button>
@@ -65,6 +65,9 @@ handleSignUp($conn);
     const submitBtn = document.getElementById('submit-btn');
     const messageElement = document.getElementById('message');
     let isRegistered = false;
+
+    // Khởi tạo password validation
+    initPasswordValidation();
 
     handleFormSubmit(form,
       (data) => {
@@ -87,11 +90,10 @@ handleSignUp($conn);
       });
     });
 
-    // Thêm xử lý sự kiện click cho nút submit
     submitBtn.addEventListener('click', function(e) {
       if (isRegistered) {
-        e.preventDefault(); // Ngăn form submit
-        window.location.href = '/views/login/sign_in.php'; // Chuyển hướng đến trang đăng nhập
+        e.preventDefault();
+        window.location.href = '/views/login/sign_in.php';
       }
     });
   </script>

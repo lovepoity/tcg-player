@@ -63,7 +63,9 @@ $totalSpent = array_sum(array_column($orders, 'total_amount'));
             <p>Order ID: <?php echo $order['id']; ?> - &nbsp;</p>
             <p> Cards: <?php echo array_sum(array_column($order['items'], 'quantity')); ?></p>
           </div>
-          <span class="order__status--active"><?php echo ucfirst($order['status']); ?></span>
+          <span class="order__status--active" data-status="<?php echo ucfirst($order['status']); ?>">
+            <?php echo ucfirst($order['status']); ?>
+          </span>
           <div class="order__total">
             <p>Total: <span>$<?php echo number_format($order['total_amount'], 2); ?></span></p>
             <button class="order__total--btn-item" data-order-id="<?php echo $order['id']; ?>">

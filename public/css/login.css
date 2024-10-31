@@ -199,4 +199,19 @@ body{
     height: 100vh;
   }
 }
+/* ----------------------------------------------------------------------------- */
+/* PASSWORD REQUIREMENTS */
+.password-requirements {
+    margin-top: 8px;
+    font-size: 1rem;
+  }
+  
+  .requirement {
+    margin-right: 5px;
+    color: #666;
+}
+
+.requirement.valid {
+    color: green;
+}
 

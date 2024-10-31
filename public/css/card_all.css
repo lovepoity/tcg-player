@@ -195,7 +195,6 @@
 .product__img img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
 }
 
 .product__info {
@@ -267,17 +266,30 @@
 }
 
 /* Media Queries */
-@media (max-width: 768px) {
-  .navbar__sub-page{
-    display: none;
-  }
-  .sub__location{
-    display: none;
+@media (max-width: 1400px) {
+  .product {
+    flex: 1 1 calc(33.33% - 20px); /* 3 cột */
   }
 }
+
+@media (max-width: 1300px) {
+  .sub__banner {
+    padding: 0 30px;
+  }
+  .product {
+    flex: 1 1 calc(33.33% - 20px); /* 3 cột */
+  }
+}
+
 @media (max-width: 1200px) {
   .product {
     flex: 1 1 calc(33.33% - 20px); /* 3 cột */
+  }
+}
+
+@media (max-width: 1000px) {
+  .product {
+    flex: 1 1 calc(50% - 20px); /* 2 cột */
   }
 }
 
@@ -293,9 +305,12 @@
   }
 }
 
-@media (max-width: 1300px) {
-  .sub__banner {
-    padding: 0 30px;
+@media (max-width: 768px) {
+  .navbar__sub-page{
+    display: none;
+  }
+  .sub__location{
+    display: none;
   }
 }
 

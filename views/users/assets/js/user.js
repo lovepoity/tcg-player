@@ -83,6 +83,8 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.text())
             .then(html => {
                 userContent.innerHTML = html;
+                // Dispatch event after content is loaded
+                document.dispatchEvent(new Event('contentLoaded'));
             })
             .catch(error => {
                 console.error('Error loading content:', error);
@@ -111,4 +113,82 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Error:', error);
             });
     }
+
+    // Thêm các hàm xử lý email preferences
+    window.saveSubscriptions = function() {
+        const form = document.querySelector('.load--content');
+        const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+        const data = {};
+
+        checkboxes.forEach(checkbox => {
+            const name = checkbox.name.match(/\[(.*?)\]/)[1];
+            data[name] = checkbox.checked ? 1 : 0;
+        });
+
+        fetch('/views/users/functions/email_preferences.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Email preferences saved successfully!');
+            } else {
+                showToast('Error saving preferences');
+            }
+        })
+        .catch(error => {
+            showToast('Error saving preferences');
+        });
+    }
+
+    window.unsubscribeAll = function() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        const saveButton = document.querySelector('.btn--change');
+        const unsubscribeButton = document.querySelector('.btn--unsubscribe');
+        
+        // Bỏ check tất cả checkbox
+        checkboxes.forEach(cb => cb.checked = false);
+        
+        // Cập nhật trạng thái buttons ngay lập tức
+        saveButton.disabled = true;
+        unsubscribeButton.disabled = true;
+        saveButton.classList.remove('active');
+        unsubscribeButton.classList.remove('active');
+        
+        // Lưu thay đổi
+        window.saveSubscriptions();
+    }
+
+    // Xử lý email preferences khi content được load
+    document.addEventListener('contentLoaded', function() {
+        const checkboxes = document.querySelectorAll('.email__block input[type="checkbox"], .email__block--2 input[type="checkbox"], .email__block--3 input[type="checkbox"]');
+        const saveButton = document.querySelector('.btn--change');
+        const unsubscribeButton = document.querySelector('.btn--unsubscribe');
+        
+        if(saveButton && unsubscribeButton) {
+            saveButton.disabled = true;
+            unsubscribeButton.disabled = true;
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const hasChecked = Array.from(checkboxes).some(cb => cb.checked);
+                    saveButton.disabled = !hasChecked;
+                    unsubscribeButton.disabled = !hasChecked;
+                    saveButton.classList.toggle('active', hasChecked);
+                    unsubscribeButton.classList.toggle('active', hasChecked);
+                });
+            });
+
+            // Kiểm tra trạng thái ban đầu
+            const hasChecked = Array.from(checkboxes).some(cb => cb.checked);
+            saveButton.disabled = !hasChecked;
+            unsubscribeButton.disabled = !hasChecked;
+            saveButton.classList.toggle('active', hasChecked);
+            unsubscribeButton.classList.toggle('active', hasChecked);
+        }
+    });
 });

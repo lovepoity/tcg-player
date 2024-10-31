@@ -1,5 +1,5 @@
 // Thêm đoạn này ở đầu file, ngoài $(document).ready
-window.showToast = function(message, duration = 7000) {
+window.showToast = function(message, duration = 4000) {
     const $toast = $('#toast');
     $('#toast-message').text(message);
     
@@ -13,7 +13,7 @@ window.showToast = function(message, duration = 7000) {
 }
 
 $(document).ready(function() {
-  function showToast(message, duration = 7000) {
+  function showToast(message, duration = 4000) {
     const $toast = $('#toast');
     $('#toast-message').text(message);
     
@@ -42,7 +42,7 @@ $(document).ready(function() {
       success: function(response) {
         updatePackageSummary($package);
         updateCartSummary();
-        showToast('Quantity updated successfully');
+        showToast('Quantity updated successfully.');
         updateCartCount(response.unique_items_count);
       },
       error: function(jqXHR, textStatus, errorThrown) {
@@ -126,7 +126,7 @@ $(document).ready(function() {
           $item.remove();
           updatePackageSummary($package);
           updateCartSummary();
-          showToast('Item removed from cart');
+          showToast('Item removed from cart.');
           updateCartCount(response.unique_items_count);
           
           // Kiểm tra nếu package trống, xóa package
@@ -158,7 +158,7 @@ $(document).ready(function() {
         if (response.success) {
           showEmptyCart();
           updateCartCount(0);
-          showToast('Cart cleared successfully');
+          showToast('Cart cleared successfully.');
         } else {
           showToast('Cannot clear cart: ' + response.message);
         }
@@ -183,7 +183,7 @@ $(document).ready(function() {
         if (response.success) {
           $package.remove();
           updateCartSummary();
-          showToast('Package removed successfully');
+          showToast('Package removed successfully.');
           updateCartCount(response.unique_items_count);
         } else {
           showToast('Failed to remove package: ' + response.message);

@@ -1,4 +1,5 @@
-<?php include_once '../../includes/header.php'; ?>
+<?php include_once '../../includes/header.php';
+?>
 <link rel="stylesheet" href="./assets/css/user.css">
 <div class="user">
   <div class="user__container">
@@ -48,5 +49,7 @@
   </div>
 </div>
 <script src="./assets/js/user.js"></script>
-<script src="./assets/js/orders.js"></script>
+<script src="./assets/js/toast.js"></script>
+<script src="./assets/js/data.js"></script>
+<script src="./assets/js/information.js"></script>
 <?php include_once '../../includes/footer.php'; ?>

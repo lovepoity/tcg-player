@@ -43,6 +43,9 @@ if (!$order) {
           <p>Status </p><span><?php echo ucfirst($order['status']); ?></span>
         </div>
         <div class="order-details__content-item text--custom">
+          <p>Shipping Fee </p><span>$<?php echo number_format($order['shipping_fee'], 2); ?></span>
+        </div>
+        <div class="order-details__content-item text--custom">
           <p>Total Amount </p><span>$<?php echo number_format($order['total_amount'], 2); ?></span>
         </div>
       </div>

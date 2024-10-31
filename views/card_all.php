@@ -167,7 +167,18 @@ $set_name = isset($info['set_name']) ? $info['set_name'] : null;
   <?php if ($total_pages > 1): ?>
     <div class="pagination">
       <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-        <a href="?<?php echo $show_all ? 'show_all=1' : ($set_id ? 'set_id=' . $set_id : 'game_id=' . $game_id); ?>&page=<?php echo $i; ?>" <?php echo ($i == $current_page) ? 'class="active"' : ''; ?>><?php echo $i; ?></a>
+        <a href="?<?php
+                  $params = [];
+                  if ($show_all) {
+                    $params['show_all'] = 1;
+                  } else if ($set_id) {
+                    $params['set_id'] = $set_id;
+                  } else {
+                    $params['game_id'] = $game_id;
+                  }
+                  $params['page'] = $i;
+                  echo http_build_query($params);
+                  ?>" <?php echo ($i == $current_page) ? 'class="active"' : ''; ?>><?php echo $i; ?></a>
       <?php endfor; ?>
     </div>
   <?php endif; ?>
@@ -189,20 +200,21 @@ $set_name = isset($info['set_name']) ? $info['set_name'] : null;
     $('.pagination a').on('click', function(e) {
       e.preventDefault();
       var url = $(this).attr('href');
-      $.ajax({
-        url: '/views/load_cards.php' + url.substring(url.indexOf('?')),
-        type: 'GET',
-        success: function(data) {
-          $('.product-grid').html(data);
+      var clickedPage = $(this);
 
-          // Cập nhật URL mà không tải lại trang
+      $.ajax({
+        url: window.location.pathname + url,
+        type: 'GET',
+        success: function(response) {
+          var newDoc = new DOMParser().parseFromString(response, 'text/html');
+          $('.product-grid').html($(newDoc).find('.product-grid').html());
+
           history.pushState(null, '', url);
 
-          // Cập nhật trạng thái active của nút phân trang
+          // Cập nhật active class
           $('.pagination a').removeClass('active');
-          $('.pagination a[href="' + url + '"]').addClass('active');
+          clickedPage.addClass('active');
 
-          // Cuộn lên đầu danh sách sản phẩm
           $('html, body').animate({
             scrollTop: $(".product-grid").offset().top
           }, 500);

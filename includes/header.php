@@ -212,7 +212,7 @@ function getCartItemCount($conn, $user_id)
                     <li><a href="/views/users/user.php?tabs=my_account">Account</a></li>
                     <li><a href="/views/users/user.php?tabs=user_history">Order History</a></li>
                     <li><a href="/views/users/user.php?tabs=user_data">Account & Data</a></li>
-                    <li><a href="/views/users/user.php?tabs=user_address">Manage Addresses</a></li>
+                    <li><a href="/views/users/user.php?tabs=user_information">User Information</a></li>
                     <li><a href="/views/users/user.php?tabs=user_payment">Manage Payment Methods</a></li>
                     <li><a href="/views/users/user.php?tabs=user_messages">Messages</a></li>
                     <li><a href="/views/users/user.php?tabs=user_giftcard">Redeem Gift Card</a></li>

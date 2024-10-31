@@ -8,10 +8,10 @@
       <a href="#" class="user-nav__link" data-tab="user_history"><i class="fa-solid fa-clock-rotate-left"></i> Order History</a>
     </li>
     <li class="user-nav__item">
-      <a href="#" class="user-nav__link" data-tab="user_data"><i class="fa-solid fa-user"></i> Account & Data</a>
+      <a href="#" class="user-nav__link" data-tab="user_data"><i class="fa-solid fa-shield-halved"></i> Account & Data</a>
     </li>
     <li class="user-nav__item">
-      <a href="#" class="user-nav__link" data-tab="user_address"><i class="fa-solid fa-location-dot"></i> Addresses</a>
+      <a href="#" class="user-nav__link" data-tab="user_information"><i class="fa-solid fa-user"></i> User Information</a>
     </li>
     <li class="user-nav__item">
       <a href="#" class="user-nav__link" data-tab="user_payment"><i class="fa-solid fa-credit-card"></i> Payment Methods</a>

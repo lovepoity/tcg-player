@@ -47,6 +47,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       exit;
     }
 
+    // Kiểm tra mật khẩu mới có giống mật khẩu hiện tại không
+    $stmt = $conn->prepare("SELECT password FROM users WHERE id = :user_id");
+    $stmt->bindParam(':user_id', $userId);
+    $stmt->execute();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($newPassword === $currentPassword) {
+      echo json_encode(['success' => false, 'message' => 'New password must be different from current password.']);
+      exit;
+    }
+
     // Kiểm tra mật khẩu mới và xác nhận mật khẩu
     if ($newPassword !== $confirmPassword) {
       echo json_encode(['success' => false, 'message' => 'New passwords do not match']);

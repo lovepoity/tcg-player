@@ -19,7 +19,7 @@ $subBanners = get_sub_banners();
   <?php endif; ?>
   <!-- SIGNUP -->
   <div class="container__signup">
-    <a href="#"><i class="fa-regular fa-envelope"></i> Sign Up for Emails <i class='bx bxs-right-arrow'></i></a>
+    <a href="/views/login/sign_up.php"><i class="fa-regular fa-envelope"></i> Sign Up for Emails <i class='bx bxs-right-arrow'></i></a>
   </div>
   <!-- CONTENT -->
   <div class="container__content">

@@ -101,6 +101,59 @@ try {
   $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = :user_id");
   $stmt->execute([':user_id' => $user_id]);
 
+  // Tính toán hoa hồng và thu nhập
+  $admin_commission = $total_amount * 0.1; // 10% cho admin
+  $store_earnings = $total_amount * 0.9;   // 90% cho store
+
+  // Lưu transaction
+  $stmt = $conn->prepare("
+      INSERT INTO transactions (
+          order_id, 
+          amount, 
+          shipping_fee, 
+          admin_commission, 
+          store_earnings
+      )
+      VALUES (
+          :order_id, 
+          :amount, 
+          :shipping_fee, 
+          :admin_commission, 
+          :store_earnings
+      )
+  ");
+
+  $stmt->execute([
+    ':order_id' => $order_id,
+    ':amount' => $total_amount,
+    ':shipping_fee' => $total_shipping,
+    ':admin_commission' => $admin_commission,
+    ':store_earnings' => $store_earnings
+  ]);
+
+  // Lưu thu nhập cho từng store
+  foreach ($stores as $store_id => $shipping) {
+    $store_total = 0;
+    foreach ($cart_items as $item) {
+      if ($item['store_id'] == $store_id) {
+        $store_total += $item['price'] * $item['quantity'];
+      }
+    }
+
+    $store_earning = $store_total * 0.9; // 90% cho store
+
+    $stmt = $conn->prepare("
+          INSERT INTO store_earnings (store_id, order_id, amount, status)
+          VALUES (:store_id, :order_id, :amount, 'Pending')
+      ");
+
+    $stmt->execute([
+      ':store_id' => $store_id,
+      ':order_id' => $order_id,
+      ':amount' => $store_earning
+    ]);
+  }
+
   echo json_encode(['success' => true, 'order_id' => $order_id]);
 } catch (Exception $e) {
   echo json_encode(['success' => false, 'error' => $e->getMessage()]);

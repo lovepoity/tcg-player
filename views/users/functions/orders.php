@@ -201,3 +201,41 @@ function getOrderById($orderId)
 
   return $order;
 }
+
+function cancelOrder($orderId, $userId)
+{
+  global $conn;
+
+  // Kiểm tra order có thuộc về user không
+  $sql = "SELECT id, status FROM orders WHERE id = :order_id AND user_id = :user_id";
+  $stmt = $conn->prepare($sql);
+  $stmt->bindParam(':order_id', $orderId);
+  $stmt->bindParam(':user_id', $userId);
+  $stmt->execute();
+  $order = $stmt->fetch(PDO::FETCH_ASSOC);
+
+  if (!$order) {
+    return ['success' => false, 'message' => 'Order not found'];
+  }
+
+  if ($order['status'] !== 'Processing') {
+    return ['success' => false, 'message' => 'Order cannot be cancelled'];
+  }
+
+  // Cập nhật trạng thái order
+  $sql = "UPDATE orders SET status = 'Cancelled' WHERE id = :order_id";
+  $stmt = $conn->prepare($sql);
+  $stmt->bindParam(':order_id', $orderId);
+
+  if ($stmt->execute()) {
+    // Cập nhật trạng thái các order items
+    $sql = "UPDATE order_items SET status = 'Cancelled' WHERE order_id = :order_id";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':order_id', $orderId);
+    $stmt->execute();
+
+    return ['success' => true, 'message' => 'Order cancelled successfully'];
+  }
+
+  return ['success' => false, 'message' => 'Error cancelling order'];
+}

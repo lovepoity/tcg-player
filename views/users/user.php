@@ -49,6 +49,7 @@
   </div>
 </div>
 <script src="./assets/js/user.js"></script>
+<script src="./assets/js/order_detail.js"></script>
 <script src="./assets/js/toast.js"></script>
 <script src="./assets/js/data.js"></script>
 <script src="./assets/js/information.js"></script>

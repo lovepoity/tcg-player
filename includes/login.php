@@ -13,7 +13,7 @@ function handleLogin($conn)
 {
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
-    $password = $_POST['password'];
+    $password = trim($_POST['password']);
 
     $sql = "SELECT id, email, password FROM users WHERE email = :email AND password = :password";
 
@@ -40,13 +40,7 @@ function handleSignUp($conn)
 {
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
-    $password = $_POST['password'];
-    $confirm_password = $_POST['confirm-password'];
-
-    if ($password !== $confirm_password) {
-      echo json_encode(['success' => false, 'message' => 'Passwords do not match']);
-      exit();
-    }
+    $password = trim($_POST['password']);
 
     $sql = "INSERT INTO users (email, password) VALUES (:email, :password)";
 
@@ -89,11 +83,25 @@ function handleForgotPassword($conn)
         $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
         $mail->Username   = 'tcgplayes@gmail.com';
-        $mail->Password   = 'lome hund houv hidj';
+        $mail->Password   = 'szkt hrov nddt citp';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
 
-        $mail->setFrom('noreply@tcgplayer.com', 'Team TCGplayer');
+        $mail->CharSet = 'UTF-8';
+        $mail->SMTPDebug = 2;
+        $mail->Debugoutput = 'error_log';
+
+        $mail->addCustomHeader('List-Unsubscribe', '<mailto:' . $mail->Username . '>');
+        $mail->addCustomHeader('X-Priority', '3');
+        $mail->addCustomHeader('X-MSMail-Priority', 'Normal');
+
+        $mail->setFrom('noreply@tcgplayer.com', 'Team TCGplayer', false);
+        $mail->addReplyTo('support@tcgplayer.com', 'TCGplayer Support');
+
+        $mail->addCustomHeader('Precedence', 'bulk');
+        $mail->addCustomHeader('Auto-Submitted', 'auto-generated');
+        $mail->addCustomHeader('X-Auto-Response-Suppress', 'All');
+
         $mail->addAddress($email);
 
         $mail->isHTML(true);

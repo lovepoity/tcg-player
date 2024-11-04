@@ -40,13 +40,30 @@ if (!$order) {
           <p>Payment Method </p><span><?php echo $order['payment_method']; ?></span>
         </div>
         <div class="order-details__content-item text--custom">
-          <p>Status </p><span><?php echo ucfirst($order['status']); ?></span>
+          <p>Status </p><span style="text-decoration: underline;"><?php echo ucfirst($order['status']); ?></span>
         </div>
         <div class="order-details__content-item text--custom">
           <p>Shipping Fee </p><span>$<?php echo number_format($order['shipping_fee'], 2); ?></span>
         </div>
         <div class="order-details__content-item text--custom">
           <p>Total Amount </p><span>$<?php echo number_format($order['total_amount'], 2); ?></span>
+        </div>
+      </div>
+    </div>
+    <!-- Cancel Order Button -->
+    <?php if ($order['status'] === 'Processing'): ?>
+      <button class="order-detail__cancel-btn" data-order-id="<?php echo $order['id']; ?>">
+        Cancel Order
+      </button>
+    <?php endif; ?>
+    <!-- Modal Cancel Order -->
+    <div class="modal" id="cancelOrderModal">
+      <div class="modal__content">
+        <h3>Cancel Order</h3>
+        <p>Are you sure you want to cancel this order?</p>
+        <div class="modal__actions">
+          <button class="modal__btn modal__btn--confirm">Yes, Cancel Order</button>
+          <button class="modal__btn modal__btn--cancel">No</button>
         </div>
       </div>
     </div>
@@ -140,5 +157,10 @@ if (!$order) {
         </table>
       <?php endforeach; ?>
     </div>
+  </div>
+</div>
+<div id="user__toast" class="user__toast">
+  <div class="user__toast-content">
+    <p id="user__toast-message"></p>
   </div>
 </div>

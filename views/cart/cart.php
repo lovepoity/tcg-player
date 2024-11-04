@@ -56,7 +56,7 @@
     JOIN games g ON s.game_id = g.id
     JOIN stores st ON cl.store_id = st.id
     WHERE c.user_id = :user_id
-    ORDER BY st.id, cd.name
+    ORDER BY c.created_at DESC
 ");
   $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
   $stmt->execute();

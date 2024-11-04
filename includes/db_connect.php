@@ -3,6 +3,8 @@ $host = 'localhost';
 $dbname = 'tcg_database';
 $username = 'root';
 $password = '';
+// $username = 'tcg';
+// $password = 'Huy221997.';
 
 try {
   $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);

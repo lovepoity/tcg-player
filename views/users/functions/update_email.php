@@ -25,6 +25,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       exit;
     }
 
+    // Kiểm tra email mới có giống email hiện tại không
+    $stmt = $conn->prepare("SELECT email FROM users WHERE id = :user_id");
+    $stmt->bindParam(':user_id', $userId);
+    $stmt->execute();
+    $currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($currentUser['email'] === $newEmail) {
+      echo json_encode(['success' => false, 'message' => 'New email must be different from current email.']);
+      exit;
+    }
+
+    // Kiểm tra email mới và email xác nhận có khớp không
+    if ($newEmail !== $confirmEmail) {
+      echo json_encode(['success' => false, 'message' => 'Email confirmation does not match.']);
+      exit;
+    }
+
     // Check if email already exists
     $stmt = $conn->prepare("SELECT id FROM users WHERE email = :email AND id != :user_id");
     $stmt->bindParam(':email', $newEmail);
@@ -41,6 +58,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bindParam(':email', $newEmail);
     $stmt->bindParam(':user_id', $userId);
     $stmt->execute();
+
+    // Cập nhật session với email mới
+    $_SESSION['user_email'] = $newEmail;
 
     echo json_encode(['success' => true, 'message' => 'Email updated successfully']);
   } catch (PDOException $e) {

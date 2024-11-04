@@ -222,24 +222,24 @@ function getCartItemCount($conn, $user_id)
                   </ul>
                 </div>
                 <div class="user__menu__right">
-                  <h4><a href="#">Sell</a></h4>
+                  <h4><a href="/views/users/user.php?tabs=my_account">Sell</a></h4>
                   <ul>
-                    <li><a href="#">Account</a></li>
-                    <li><a href="#">Seller Portal</a></li>
-                    <li><a href="#">Marketplace Seller Resources</a></li>
-                    <li><a href="#">Pro Seller Resources</a></li>
+                    <li><a href="/views/users/user.php?tabs=my_account">Account</a></li>
+                    <li><a href="/views/users/user.php?tabs=my_account">Seller Portal</a></li>
+                    <li><a href="/views/users/user.php?tabs=my_account">Marketplace Seller Resources</a></li>
+                    <li><a href="/views/users/user.php?tabs=my_account">Pro Seller Resources</a></li>
                   </ul>
-                  <h4><a href="#">Help</a></h4>
+                  <h4><a href="/views/users/user.php?tabs=my_account">Help</a></h4>
                   <ul>
-                    <li><a href="#">Contact Customer Support</a></li>
-                    <li><a href="#">Help Center</a></li>
-                    <li><a href="#">Refund and Return Policy</a></li>
-                    <li><a href="#">TCGplayer Safeguard</a></li>
+                    <li><a href="/views/users/user.php?tabs=my_account">Contact Customer Support</a></li>
+                    <li><a href="/views/users/user.php?tabs=my_account">Help Center</a></li>
+                    <li><a href="/views/users/user.php?tabs=my_account">Refund and Return Policy</a></li>
+                    <li><a href="/views/users/user.php?tabs=my_account">TCGplayer Safeguard</a></li>
                   </ul>
-                  <h4><a href="#">Gift Cards</a></h4>
+                  <h4><a href="/views/users/user.php?tabs=my_account">Gift Cards</a></h4>
                   <ul>
-                    <li><a href="#">Buy a Gift Card</a></li>
-                    <li><a href="#">Redeem a Gift Card</a></li>
+                    <li><a href="/views/users/user.php?tabs=my_account">Buy a Gift Card</a></li>
+                    <li><a href="/views/users/user.php?tabs=my_account">Redeem a Gift Card</a></li>
                   </ul>
                   <a style="font-weight: normal;" href="/views/login/logout.php"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</a>
                 </div>

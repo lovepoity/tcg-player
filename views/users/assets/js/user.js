@@ -97,6 +97,24 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.text())
             .then(html => {
                 userContent.innerHTML = html;
+                
+                // Load script order_detail.js nếu chưa có
+                if (!document.querySelector('script[src="/views/users/assets/js/order_detail.js"]')) {
+                    const script = document.createElement('script');
+                    script.src = '/views/users/assets/js/order_detail.js';
+                    script.onload = function() {
+                        // Khởi tạo lại các event listeners sau khi script được load
+                        if (typeof window.initializeOrderDetail === 'function') {
+                            window.initializeOrderDetail();
+                        }
+                    };
+                    document.body.appendChild(script);
+                } else {
+                    // Nếu script đã tồn tại, chỉ cần khởi tạo lại event listeners
+                    if (typeof window.initializeOrderDetail === 'function') {
+                        window.initializeOrderDetail();
+                    }
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -189,6 +207,50 @@ document.addEventListener('DOMContentLoaded', function() {
             unsubscribeButton.disabled = !hasChecked;
             saveButton.classList.toggle('active', hasChecked);
             unsubscribeButton.classList.toggle('active', hasChecked);
+        }
+
+        const giftcardInput = document.querySelector('.giftcard-input');
+        const redeemButton = document.querySelector('.giftcard-redeem');
+        
+        if (giftcardInput && redeemButton) {
+            redeemButton.addEventListener('click', function() {
+                const code = giftcardInput.value.trim();
+                
+                if (!code) {
+                    showToast('Please enter a gift card code');
+                    return;
+                }
+
+                // Giả lập response thành công
+                showToast('Gift card redeemed successfully!');
+                giftcardInput.value = '';
+            });
+
+            // Thêm xử lý khi người dùng nhấn Enter
+            giftcardInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    redeemButton.click();
+                }
+            });
+        }
+    });
+
+    // Thêm xử lý cho my__action clicks
+    document.addEventListener('click', function(e) {
+        const actionLink = e.target.closest('.my__action a');
+        if (actionLink) {
+            e.preventDefault();
+            const tab = actionLink.dataset.tab;
+            
+            if (tab === 'user_history') {
+                history.pushState({}, '', `${window.location.pathname}?tabs=orders`);
+                loadOrderHistory();
+            } else {
+                history.pushState({}, '', `${window.location.pathname}?tabs=${tab}`);
+                loadContent(tab);
+            }
+            
+            updateActiveTab(tab);
         }
     });
 });

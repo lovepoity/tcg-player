@@ -18,7 +18,7 @@ if (!$user) {
 
 <div class="user-content">
   <h2 class="user-content__title">User Information</h2>
-  <div class="load--content">
+  <div class="load-content">
     <h3 class="user--section__title">Change Your Information</h3>
     <form id="informationForm" class="user-information__form">
       <div class="user-information__group">

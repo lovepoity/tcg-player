@@ -16,18 +16,18 @@ if (!$user) {
 
 <div class="user-content">
   <h2 class="user-content__title">Account & Data</h2>
-  <div class="user-data">
+  <div class="load-content">
     <h3 class="user--section__title">Change Your Email</h3>
     <p class="user--section__desc">Use the form below to change your email.</p>
     <form id="emailForm" class="user-data__form">
       <div class="user-data__field">
-        <input placeholder="New Email" type="email" name="email" class="user--input">
+        <input autocomplete="off" placeholder="New Email" type="email" name="email" class="user--input">
       </div>
       <div class="user-data__field">
-        <input placeholder="Confirm Email" type="email" name="confirm_email" class="user--input">
+        <input autocomplete="off" placeholder="Confirm Email" type="email" name="confirm_email" class="user--input">
       </div>
       <div class="user-data__field">
-        <input placeholder="Current Password" type="password" name="password" class="user--input">
+        <input autocomplete="off" placeholder="Current Password" type="password" name="password" class="user--input">
       </div>
       <button type="submit" class="user--submit">Submit</button>
     </form>
@@ -35,7 +35,7 @@ if (!$user) {
     <p class="user--section__desc">Use the form below to change your password. Required fields are marked with an asterisk (*).</p>
     <form id="passwordForm" class="user-data__form">
       <div class="user-data__field">
-        <input placeholder="Current Password" type="password" name="current_password" class="user--input">
+        <input autocomplete="off" placeholder="Current Password" type="password" name="current_password" class="user--input">
       </div>
       <div class="password-requirements">
         <span>At least:</span>
@@ -45,10 +45,10 @@ if (!$user) {
         <span id="uppercase" class="requirement">1 uppercase</span>
       </div>
       <div class="user-data__field">
-        <input placeholder="New Password" type="password" name="password" class="user--input" id="newPassword">
+        <input autocomplete="off" placeholder="New Password" type="password" name="password" class="user--input" id="newPassword">
       </div>
       <div class="user-data__field">
-        <input placeholder="Confirm New Password" type="password" name="confirm_password" class="user--input">
+        <input autocomplete="off" placeholder="Confirm New Password" type="password" name="confirm_password" class="user--input">
       </div>
       <button type="submit" class="user--submit">Submit</button>
     </form>

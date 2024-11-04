@@ -13,7 +13,13 @@ $orders = getOrdersByUserId($userId);
 
 // Tính tổng số orders và tổng tiền
 $totalOrders = count($orders);
-$totalSpent = array_sum(array_column($orders, 'total_amount'));
+$totalSpent = array_reduce($orders, function ($carry, $order) {
+  // Chỉ cộng tổng tiền của các đơn không phải trạng thái Cancelled
+  if ($order['status'] !== 'Cancelled') {
+    $carry += $order['total_amount'];
+  }
+  return $carry;
+}, 0);
 ?>
 <link rel="stylesheet" href="/views/users/assets/css/order.css">
 <div class="user-content">

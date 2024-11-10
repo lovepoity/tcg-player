@@ -1,4 +1,7 @@
 <?php
+
+use function PHPSTORM_META\map;
+
 $host = 'localhost';
 $dbname = 'tcg_database';
 $username = 'root';

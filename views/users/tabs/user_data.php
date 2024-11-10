@@ -54,9 +54,3 @@ if (!$user) {
     </form>
   </div>
 </div>
-
-<div id="user__toast" class="user__toast">
-  <div class="user__toast-content">
-    <p id="user__toast-message"></p>
-  </div>
-</div>

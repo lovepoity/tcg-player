@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {
         if (xhr.status === 200) {
           var response = JSON.parse(xhr.responseText);
           if (response.success) {
-            window.location.href = '../tabs/store_layout.php?page=store_dashboard';
+            window.location.href = '../stores.php?page=store_dashboard';
           } else {
             document.getElementById('error-message').textContent = response.error;
             document.getElementById('error-message').style.display = 'block';

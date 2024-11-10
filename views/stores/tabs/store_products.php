@@ -56,11 +56,6 @@ if ($selected_game) {
   </div>
 </div>
 
-<div id="store__toast" class="store__toast">
-  <div class="store__toast-content">
-    <p id="store__toast-message"></p>
-  </div>
-</div>
 
 <script>
   $(document).ready(function() {
@@ -80,7 +75,7 @@ if ($selected_game) {
     // Cập nhật hàm loadCardTable để nhận thêm tham số searchTerm
     function loadCardTable(gameId, setId, searchTerm = '') {
       $.ajax({
-        url: 'card_table.php',
+        url: '/views/stores/tabs/card_table.php',
         method: 'GET',
         data: {
           game_id: gameId,
@@ -120,7 +115,7 @@ if ($selected_game) {
       $('#gameSelect').val(gameId);
       if (gameId) {
         $.ajax({
-          url: '../actions/get_sets.php',
+          url: '/views/stores/actions/get_sets.php',
           method: 'GET',
           data: {
             game_id: gameId
@@ -145,7 +140,7 @@ if ($selected_game) {
 
       if (gameId) {
         $.ajax({
-          url: '../actions/get_sets.php',
+          url: '/views/stores/actions/get_sets.php',
           method: 'GET',
           data: {
             game_id: gameId

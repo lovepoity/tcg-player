@@ -123,7 +123,7 @@ button:hover{
   margin-bottom: 40px;
 }
 .my__action p{
-  color: #86B437;
+  color: #5A88C6;
   font-size: 1.8rem;
   font-weight: 700;
   margin-bottom: 10px;
@@ -136,7 +136,7 @@ button:hover{
   display: block;
 }
 .my__action:hover{
-  background-color: #86B437;
+  background-color: #376DB4;
 }
 .my__action:hover p, .my__action:hover span{
   color: var(--white-color);
@@ -389,7 +389,7 @@ h3{
   opacity: 1;
   visibility: visible;
   right: 20px;
-  animation: user__toast-animation 1.25s forwards;
+  animation: user__toast-animation 1.5s forwards;
 }
 
 @keyframes user__toast-animation {

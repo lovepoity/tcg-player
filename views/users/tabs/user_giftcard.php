@@ -8,8 +8,3 @@
     <button class="user--submit giftcard-redeem" type="submit">Redeem</button>
   </div>
 </div>
-<div id="user__toast" class="user__toast">
-  <div class="user__toast-content">
-    <p id="user__toast-message"></p>
-  </div>
-</div>

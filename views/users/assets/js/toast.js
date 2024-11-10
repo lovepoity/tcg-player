@@ -1,4 +1,4 @@
-function showToast(message, duration = 5000) {
+function showToast(message, duration = 3000) {
     const toast = document.getElementById('user__toast');
     const toastMessage = document.getElementById('user__toast-message');
     

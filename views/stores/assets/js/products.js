@@ -13,7 +13,7 @@ $(document).ready(function() {
 
         if (gameId) {
             $.ajax({
-                url: '../actions/get_sets.php',
+                url: '/views/stores/actions/get_sets.php',
                 method: 'GET',
                 data: { game_id: gameId },
                 success: function(response) {
@@ -36,7 +36,7 @@ $(document).ready(function() {
         const shipping = row.find('.store-products__shipping').val();
 
         $.ajax({
-            url: '../actions/save_card.php',
+            url: '/views/stores/actions/save_card.php',
             method: 'POST',
             data: {
                 card_id: cardId,
@@ -68,7 +68,7 @@ $(document).ready(function() {
         $('#gameSelect').val(gameId);
         // Load sets cho game được chọn
         $.ajax({
-            url: '../actions/get_sets.php',
+            url: '/views/stores/actions/get_sets.php',
             method: 'GET',
             data: { game_id: gameId },
             success: function(response) {
@@ -94,7 +94,7 @@ function loadCardTable(gameId = '', setId = '') {
     window.history.pushState({ path: newUrl }, '', newUrl);
 
     $.ajax({
-        url: 'card_table.php',
+        url: '/views/stores/tabs/card_table.php',
         method: 'GET',
         data: { 
             game_id: gameId,

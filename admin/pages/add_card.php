@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       var gameId = $(this).val();
       if (gameId) {
         $.ajax({
-          url: '../actions/get_sets.php',
+          url: '/admin/actions/get_sets.php',
           method: 'GET',
           data: {
             game_id: gameId
@@ -152,7 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $('#submit-btn').prop('disabled', !setId);
     });
 
-    handleFormSubmit("#addCardForm", '/admin/pages/add_card.php', function(response) {
+    handleFormSubmit("#addCardForm", '/admin/actions/add_card_action.php', function(response) {
       if (response.success) {
         showToast("Card added successfully", "success");
         $("#addCardForm")[0].reset();

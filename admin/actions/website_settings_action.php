@@ -4,6 +4,7 @@ require_once '../../includes/db_connect.php';
 // File upload handling function
 function uploadFile($file, $target_dir)
 {
+  $target_dir = $_SERVER['DOCUMENT_ROOT'] . $target_dir;
   $target_file = $target_dir . basename($file["name"]);
   $uploadOk = 1;
   $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
@@ -53,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         break;
       case 'logo':
         if (!empty($_FILES['logo']['name'])) {
-          $logo = uploadFile($_FILES['logo'], '../../public/images/');
+          $logo = uploadFile($_FILES['logo'], '/public/images/');
           if (!$logo) {
             throw new Exception("Error uploading logo.");
           }
@@ -65,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         break;
       case 'favicon':
         if (!empty($_FILES['favicon']['name'])) {
-          $favicon = uploadFile($_FILES['favicon'], '../../public/images/');
+          $favicon = uploadFile($_FILES['favicon'], '/public/images/');
           if (!$favicon) {
             throw new Exception("Error uploading favicon.");
           }

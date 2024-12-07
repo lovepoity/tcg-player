@@ -13,6 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {
 
   if ($store && password_verify($password, $store['password'])) {
     $_SESSION['store_id'] = $store['id'];
+    $_SESSION['store_name'] = $store['name'];
+    $_SESSION['is_store'] = true;
     echo json_encode(['success' => true]);
   } else {
     echo json_encode(['success' => false, 'error' => "Invalid store name or password"]);

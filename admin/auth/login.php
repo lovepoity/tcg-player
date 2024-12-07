@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {
 
   if ($admin && password_verify($password, $admin['password'])) {
     $_SESSION['admin_id'] = $admin['id'];
+    $_SESSION['is_admin'] = true;
     echo json_encode(['success' => true]);
   } else {
     echo json_encode(['success' => false, 'error' => "Invalid username or password"]);
@@ -66,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {
         if (xhr.status === 200) {
           var response = JSON.parse(xhr.responseText);
           if (response.success) {
-            window.location.href = '../layouts/admin_layout.php?page=dashboard';
+            window.location.href = '/admin/index.php?page=dashboard';
           } else {
             document.getElementById('error-message').textContent = response.error;
             document.getElementById('error-message').style.display = 'block';

@@ -37,19 +37,9 @@ try {
     ");
   $stmt->execute([':order_id' => $order_id]);
 
-  // Cập nhật transaction
+  // Cập nhật trạng thái order_items
   $stmt = $conn->prepare("
-    UPDATE transactions 
-    SET amount = 0,
-        admin_commission = 0,
-        store_earnings = 0
-    WHERE order_id = :order_id
-");
-  $stmt->execute([':order_id' => $order_id]);
-
-  // Cập nhật store_earnings status thành Cancelled
-  $stmt = $conn->prepare("
-        UPDATE store_earnings 
+        UPDATE order_items 
         SET status = 'Cancelled' 
         WHERE order_id = :order_id
     ");

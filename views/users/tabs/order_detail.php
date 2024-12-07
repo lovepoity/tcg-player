@@ -43,7 +43,17 @@ if (!$order) {
           <p>Status </p><span style="text-decoration: underline;"><?php echo ucfirst($order['status']); ?></span>
         </div>
         <div class="order-details__content-item text--custom">
-          <p>Shipping Fee </p><span>$<?php echo number_format($order['shipping_fee'], 2); ?></span>
+          <p>Total Items</p>
+          <span>$<?php
+                  $total_items_price = 0;
+                  foreach ($order['items'] as $item) {
+                    $total_items_price += $item['quantity'] * $item['price'];
+                  }
+                  echo number_format($total_items_price, 2);
+                  ?></span>
+        </div>
+        <div class="order-details__content-item text--custom">
+          <p>Total Shipping Fee </p><span>$<?php echo number_format($order['shipping_fee'], 2); ?></span>
         </div>
         <div class="order-details__content-item text--custom">
           <p>Total Amount </p><span>$<?php echo number_format($order['total_amount'], 2); ?></span>

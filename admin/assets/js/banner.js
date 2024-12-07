@@ -10,7 +10,7 @@ function initializeBannerPage() {
   editButtons.click(function() {
     var bannerId = $(this).data("id");
     $.ajax({
-      url: '../actions/get_banner.php',
+      url: '/admin/actions/get_banner.php',
       method: 'GET',
       data: { id: bannerId },
       dataType: 'json',

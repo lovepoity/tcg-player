@@ -101,37 +101,7 @@ try {
   $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = :user_id");
   $stmt->execute([':user_id' => $user_id]);
 
-  // Tính toán hoa hồng và thu nhập
-  $admin_commission = $total_amount * 0.1; // 10% cho admin
-  $store_earnings = $total_amount * 0.9;   // 90% cho store
-
-  // Lưu transaction
-  $stmt = $conn->prepare("
-      INSERT INTO transactions (
-          order_id, 
-          amount, 
-          shipping_fee, 
-          admin_commission, 
-          store_earnings
-      )
-      VALUES (
-          :order_id, 
-          :amount, 
-          :shipping_fee, 
-          :admin_commission, 
-          :store_earnings
-      )
-  ");
-
-  $stmt->execute([
-    ':order_id' => $order_id,
-    ':amount' => $total_amount,
-    ':shipping_fee' => $total_shipping,
-    ':admin_commission' => $admin_commission,
-    ':store_earnings' => $store_earnings
-  ]);
-
-  // Lưu thu nhập cho từng store
+  // Tính toán và lưu transactions cho từng store
   foreach ($stores as $store_id => $shipping) {
     $store_total = 0;
     foreach ($cart_items as $item) {
@@ -140,17 +110,31 @@ try {
       }
     }
 
-    $store_earning = $store_total * 0.9; // 90% cho store
+    // Tính toán số tiền
+    $tcg_amount = $store_total * 0.1;    // 10% cho TCG
+    $store_amount = $store_total * 0.9;   // 90% cho store
 
+    // Lưu transaction
     $stmt = $conn->prepare("
-          INSERT INTO store_earnings (store_id, order_id, amount, status)
-          VALUES (:store_id, :order_id, :amount, 'Pending')
-      ");
+        INSERT INTO transactions (
+            order_id,
+            store_id,
+            store_amount,
+            tcg_amount
+        )
+        VALUES (
+            :order_id,
+            :store_id, 
+            :store_amount,
+            :tcg_amount
+        )
+    ");
 
     $stmt->execute([
-      ':store_id' => $store_id,
       ':order_id' => $order_id,
-      ':amount' => $store_earning
+      ':store_id' => $store_id,
+      ':store_amount' => $store_amount,
+      ':tcg_amount' => $tcg_amount
     ]);
   }
 

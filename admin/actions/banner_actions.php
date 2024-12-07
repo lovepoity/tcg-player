@@ -49,7 +49,7 @@ function filterBanners($banners, $type)
 function handleImageUpload($file, $current_img)
 {
   if ($file['name']) {
-    $target_dir = "../../public/images/banner/";
+    $target_dir = $_SERVER['DOCUMENT_ROOT'] . "/public/images/banner/";
     $banner_img = basename($file["name"]);
     $target_file = $target_dir . $banner_img;
     if (!move_uploaded_file($file["tmp_name"], $target_file)) {

@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $('#submit-btn').prop('disabled', !gameId);
     });
 
-    handleFormSubmit("#addSetForm", '/admin/pages/add_set.php', function(response) {
+    handleFormSubmit("#addSetForm", '/admin/actions/add_set_action.php', function(response) {
       if (response.success) {
         showToast("Set added successfully", "success");
         $("#addSetForm")[0].reset();

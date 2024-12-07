@@ -1,26 +1,10 @@
 <?php
 session_start();
-
-// Hủy tất cả các biến session
-$_SESSION = array();
-
-// Nếu sử dụng session cookie, xóa cookie session
-if (ini_get("session.use_cookies")) {
-  $params = session_get_cookie_params();
-  setcookie(
-    session_name(),
-    '',
-    time() - 42000,
-    $params["path"],
-    $params["domain"],
-    $params["secure"],
-    $params["httponly"]
-  );
+// Chỉ xóa user session
+if (isset($_SESSION['is_user'])) {
+  unset($_SESSION['user_id']);
+  unset($_SESSION['user_email']);
+  unset($_SESSION['is_user']);
 }
-
-// Hủy session
-session_destroy();
-
-// Chuyển hướng về trang chủ
-header("Location: /index.php");
+header('Location: sign_in.php');
 exit();

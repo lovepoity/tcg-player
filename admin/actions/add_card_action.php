@@ -33,7 +33,7 @@ function handleAddCard($conn)
 
     // Handle image upload
     if ($_FILES['image_upload']['name']) {
-      $target_dir = "../../public/images/product/";
+      $target_dir = $_SERVER['DOCUMENT_ROOT'] . "/public/images/product/";
       $image_filename = basename($_FILES["image_upload"]["name"]);
       $target_file = $target_dir . $image_filename;
       if (!move_uploaded_file($_FILES["image_upload"]["tmp_name"], $target_file)) {

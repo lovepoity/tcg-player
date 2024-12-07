@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   });
 
   function initializeAddGamePage() {
-    handleFormSubmit("#addGameForm", '/admin/pages/add_game.php', function(response) {
+    handleFormSubmit("#addGameForm", '/admin/actions/add_game_action.php', function(response) {
       if (response.success) {
         showToast("Game added successfully", "success");
         $("#addGameForm")[0].reset();

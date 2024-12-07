@@ -18,7 +18,7 @@ function handleAddSet($conn)
     // Handle image upload
     $image_filename = null;
     if ($_FILES['image_upload']['name']) {
-      $target_dir = "../../public/images/sets/";
+      $target_dir = $_SERVER['DOCUMENT_ROOT'] . "/public/images/sets/";
       $image_filename = basename($_FILES["image_upload"]["name"]);
       $target_file = $target_dir . $image_filename;
       if (!move_uploaded_file($_FILES["image_upload"]["tmp_name"], $target_file)) {

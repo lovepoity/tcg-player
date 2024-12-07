@@ -38,5 +38,5 @@ $cards = $stmt->fetchAll(PDO::FETCH_ASSOC);
 if (empty($cards)) {
   echo '<div class="alert alert-info">No card information available. Please select another Game and Set, or try searching again.</div>';
 } else {
-  include '../components/card_table.php';
+  include __DIR__ . '/../components/card_table.php';
 }

@@ -1,0 +1,217 @@
+.store-dashboard {
+  background: var(--bg-color);
+  min-height: 100vh;
+}
+
+.store-dashboard__title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--blue-color);
+}
+
+.store-dashboard__content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.store-dashboard__main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.store-dashboard__charts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.store-dashboard__chart-card {
+  background: #fff;
+  padding: 24px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+}
+
+.store-dashboard__chart-card h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: var(--blue-color);
+}
+
+.store-dashboard__chart-container {
+  height: 320px;
+}
+
+.store-dashboard__tables {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.store-dashboard__stats {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.store-dashboard__stat-card {
+  background: #fff;
+  padding: 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.store-dashboard__stat-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background-color: rgba(59, 130, 246, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.4rem;
+  color: var(--blue-color);
+}
+
+.store-dashboard__stat-info h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--gray-color);
+  margin-bottom: 8px;
+}
+
+.store-dashboard__stat-value {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--black-color);
+}
+
+.store-dashboard__top-expensive,
+.store-dashboard__top-quantity,
+.store-dashboard__top-selling,
+.store-dashboard__top-customers {
+  background: #fff;
+  padding: 24px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+}
+
+.store-dashboard__top-expensive h2,
+.store-dashboard__top-quantity h2,
+.store-dashboard__top-selling h2,
+.store-dashboard__top-customers h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: var(--blue-color);
+}
+
+.store-dashboard__table-wrapper {
+  overflow-x: auto;
+}
+
+.store-dashboard table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.store-dashboard th {
+  padding: 16px;
+  text-align: left;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--gray-color);
+  border-bottom: 2px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.store-dashboard td {
+  padding: 16px;
+  font-size: 1.4rem;
+  color: var(--black-color);
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.store-dashboard tbody tr:hover {
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+@media (max-width: 1400px) {
+  .store-dashboard__content {
+    grid-template-columns: 1fr 250px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .store-dashboard__content {
+    grid-template-columns: 1fr;
+  }
+
+  .store-dashboard__stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .store-dashboard__stat-card {
+    flex: 1 1 calc(33.333% - 16px);
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 992px) {
+  .store-dashboard__tables {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .store-dashboard__stat-card {
+    flex: 1 1 calc(50% - 12px);
+  }
+
+  .store-dashboard__stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .store-dashboard__stat-card {
+    flex: 1 1 100%;
+  }
+
+  .store-dashboard__stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+.store-dashboard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: top;
+  margin-bottom: 20px;
+}
+
+.store-dashboard__filter-date {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 1.4rem;
+  color: var(--black-color);
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  min-width: 200px;
+}

@@ -1,13 +1,13 @@
-$(document).ready(function() {
+$(document).ready(function () {
     // Xử lý nút Get
-    $('#get-cards-btn').click(function() {
+    $('#get-cards-btn').click(function () {
         const gameId = $('#gameSelect').val();
         const setId = $('#setSelect').val();
         loadCardTable(gameId, setId);
     });
 
     // Xử lý khi chọn game
-    $('#gameSelect').change(function() {
+    $('#gameSelect').change(function () {
         const gameId = $(this).val();
         const setSelect = $('#setSelect');
 
@@ -16,7 +16,7 @@ $(document).ready(function() {
                 url: '/views/stores/actions/get_sets.php',
                 method: 'GET',
                 data: { game_id: gameId },
-                success: function(response) {
+                success: function (response) {
                     setSelect.html('<option value="">All Sets</option>' + response);
                     setSelect.prop('disabled', false);
                 }
@@ -28,7 +28,7 @@ $(document).ready(function() {
     });
 
     // Xử lý nút Save
-    $(document).on('click', '.store-products__btn-save', function() {
+    $(document).on('click', '.store-products__btn-save', function () {
         const cardId = $(this).data('card-id');
         const row = $(this).closest('tr');
         const quantity = row.find('.store-products__quantity').val();
@@ -45,16 +45,16 @@ $(document).ready(function() {
                 shipping: shipping
             },
             dataType: 'json',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
-                    showToast(response.message, 'success');
+                    showToast(response.message);
                 } else {
-                    showToast(response.message, 'error');
+                    showToast(response.message);
                 }
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.error('Error:', error);
-                showToast('Error saving changes. Please try again.', 'error');
+                showToast('Error saving changes. Please try again.');
             }
         });
     });
@@ -71,7 +71,7 @@ $(document).ready(function() {
             url: '/views/stores/actions/get_sets.php',
             method: 'GET',
             data: { game_id: gameId },
-            success: function(response) {
+            success: function (response) {
                 const setSelect = $('#setSelect');
                 setSelect.html('<option value="">All Sets</option>' + response);
                 setSelect.prop('disabled', false);
@@ -96,14 +96,14 @@ function loadCardTable(gameId = '', setId = '') {
     $.ajax({
         url: '/views/stores/tabs/card_table.php',
         method: 'GET',
-        data: { 
+        data: {
             game_id: gameId,
-            set_id: setId 
+            set_id: setId
         },
-        success: function(response) {
+        success: function (response) {
             $('#cardTableContainer').html(response);
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
             console.error('Error loading card table:', error);
         }
     });

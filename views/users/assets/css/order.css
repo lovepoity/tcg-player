@@ -1,24 +1,24 @@
 /* --------------------------------- */
 /* USER HISTORY */
-.user-content__orders{
+.user-content__orders {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
-.order__cons{
+.order__cons {
   position: relative;
   padding: 20px 0;
   display: flex;
   justify-content: space-around;
   border-radius: 4px;
   border: 1px solid var(--border-color);
-  background-color: #F8F8F8;
+  background-color: #f8f8f8;
 }
-.order__cons-item{
+.order__cons-item {
   text-align: center;
 }
-.order__cons-item::before{
-  content: '';
+.order__cons-item::before {
+  content: "";
   position: absolute;
   top: 10px;
   left: 50%;
@@ -27,83 +27,83 @@
   height: calc(100% - 20px);
   background-color: var(--border-color);
 }
-.order__cons-item p:first-child{
+.order__cons-item p:first-child {
   font-size: 2.4rem;
   font-weight: 700;
 }
-.order__cons-item p:last-child{
+.order__cons-item p:last-child {
   font-size: 1.2rem;
   font-weight: 500;
 }
 
 /* --------------------------------- */
 /* ORDER ITEMS */
-.order__items{
+.order__items {
   display: flex;
   padding: 10px;
   border-radius: 4px;
   border: 1px solid var(--border-color);
 }
-.order__item--left{
+.order__item--left {
   width: 110px;
   padding: 10px;
 }
-.order__item--left img{
+.order__item--left img {
   width: 100%;
 }
 
 /* --------------------------------- */
 /* ORDER ITEM RIGHT */
-.order__item--right{
+.order__item--right {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   width: 100%;
   padding: 10px;
 }
-.order__title{
+.order__title {
   font-weight: 500;
   font-size: 1.6rem;
   display: flex;
   justify-content: space-between;
 }
-.order__title p:first-child{
+.order__title p:first-child {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 640px;
 }
-.order__title p:last-child{
+.order__title p:last-child {
   font-size: 1.3rem;
   color: #888;
 }
-.order__status{
+.order__status {
   display: flex;
 }
-.order__status p{
+.order__status p {
   font-size: 1.2rem;
 }
-.order__status--active{
+.order__status--active {
   padding: 5px 10px;
   border-radius: 4px;
   border: 1px solid var(--border-color);
-  background-color: #F8F8F8;
+  background-color: #f8f8f8;
   width: fit-content;
   font-weight: 500;
   font-size: 1.2rem;
 }
 
-.order__total{
+.order__total {
   display: flex;
-  justify-content: space-between; 
+  justify-content: space-between;
 }
-.order__total p{
+.order__total p {
   font-size: 1.6rem;
   font-weight: 600;
   color: red;
 }
 
-.order__total--btn-item{
+.order__total--btn-item {
   cursor: pointer;
   font-family: inherit;
   font-weight: 500;
@@ -135,7 +135,7 @@
   border: none;
 }
 
-.order-detail__back-btn:hover{
+.order-detail__back-btn:hover {
   text-decoration: underline;
 }
 
@@ -179,7 +179,7 @@
 
 /* ORDER DETAILS */
 .order-details__content-item:nth-child(2),
-.order-details__content-item:nth-child(6) {
+.order-details__content-item:nth-child(7) {
   border-top: 1px solid var(--border-color);
 }
 
@@ -224,7 +224,7 @@
   border-collapse: collapse;
 }
 
-.confirm__table th, 
+.confirm__table th,
 .confirm__table td {
   border: 1px solid #ddd;
   padding: 8px;
@@ -298,7 +298,7 @@
 
 .order__status--active[data-status="Picking"] {
   background-color: rgba(224, 231, 255, 0.5);
-  border: 2px solid #E0E7FF;
+  border: 2px solid #e0e7ff;
 }
 .order__status--active[data-status="Packing"] {
   background-color: rgba(255, 255, 0, 0.1);
@@ -310,14 +310,9 @@
   border: 2px solid #ffe7bc;
 }
 
-.order__status--active[data-status="Out for Delivery"] {
-  background-color: rgba(0, 59, 253, 0.1);
-  border: 2px solid #cce2fd;
-}
-
 .order__status--active[data-status="Delivered"] {
   background-color: rgba(209, 250, 229, 0.5);
-  border: 2px solid #D1FAE5;
+  border: 2px solid #d1fae5;
 }
 
 .order__status--active[data-status="Completed"] {
@@ -327,7 +322,7 @@
 
 .order__status--active[data-status="Cancelled"] {
   background-color: rgba(254, 226, 226, 0.5);
-  border: 2px solid #FEE2E2;
+  border: 2px solid #fee2e2;
 }
 
 /* --------------------------------- */

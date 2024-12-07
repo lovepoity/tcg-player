@@ -4,7 +4,7 @@ $(document).ready(function() {
 
   function loadCards(gameId = '', setId = '', cardId = '') {
     $.ajax({
-      url: '../actions/get_cards.php',
+      url: '/admin/actions/get_cards.php',
       method: 'GET',
       data: { game_id: gameId, set_id: setId, card_id: cardId },
       success: function(response) {
@@ -21,7 +21,7 @@ $(document).ready(function() {
     var gameId = $(this).val();
     if (gameId) {
       $.ajax({
-        url: '../actions/get_sets.php',
+        url: '/admin/actions/get_sets.php',
         method: 'GET',
         data: { game_id: gameId },
         success: function(response) {
@@ -47,7 +47,7 @@ $(document).ready(function() {
     var searchTerm = $(this).val();
     if (searchTerm.length >= 1) {
       $.ajax({
-        url: '../actions/search_cards.php',
+        url: '/admin/actions/search_cards.php',
         method: 'GET',
         data: { search: searchTerm },
         success: function(response) {
@@ -125,7 +125,7 @@ $(document).ready(function() {
     e.preventDefault();
     var cardId = $(this).data('id');
     $.ajax({
-      url: '../pages/edit_card.php',
+      url: '/admin/pages/edit_card.php',
       method: 'GET',
       data: { id: cardId },
       success: function(response) {
@@ -146,7 +146,7 @@ $(document).ready(function() {
 
   $('#confirm-delete').click(function() {
     $.ajax({
-      url: '../actions/delete_card.php',
+      url: '/admin/actions/delete_card.php',
       method: 'POST',
       data: { id: cardIdToDelete },
       success: function(response) {
@@ -178,7 +178,7 @@ $(document).ready(function() {
 
   function loadPage(pageName) {
     $.ajax({
-      url: '../pages/' + pageName + '.php',
+      url: '/admin/pages/' + pageName + '.php',
       method: 'GET',
       success: function(response) {
         $('#main-content').html(response);

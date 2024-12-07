@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (response.success) {
         showToast('Card added successfully', 'success');
         setTimeout(() => {
-          window.location.href = '/admin/layouts/admin_layout.php?page=products';
+          window.location.href = '/admin/index.php?page=products';
         }, 2000);
       } else {
         showToast('Error adding card: ' + (response.error || 'Unknown error'), 'error');

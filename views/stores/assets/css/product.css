@@ -1,4 +1,4 @@
-.title{
+.title {
   font-size: 2.4rem;
   margin-bottom: 20px;
   color: var(--blue-color);
@@ -57,7 +57,7 @@
 .store-products__table {
   background-color: var(--white-color);
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 4px;
   border: 1px solid var(--border-color);
 }
 
@@ -89,22 +89,22 @@
   line-height: 2.2;
 }
 
-.store-products__table td:nth-child(1){
+.store-products__table td:nth-child(1) {
   width: 30px;
 }
-.store-products__table td:nth-child(2){
+.store-products__table td:nth-child(2) {
   width: 150px;
 }
-.store-products__table td:nth-child(3){
+.store-products__table td:nth-child(3) {
   width: 200px;
 }
 
-.store-products__table td:nth-child(8){
+.store-products__table td:nth-child(8) {
   width: 300px;
 }
 .store-products__table td:nth-child(9),
 .store-products__table td:nth-child(10),
-.store-products__table td:nth-child(11){
+.store-products__table td:nth-child(11) {
   width: 100px;
 }
 
@@ -118,7 +118,7 @@
 .store-products__quantity,
 .store-products__price,
 .store-products__shipping {
-  padding: 5px 10px;
+  padding: 8px 16px;
   font-size: 1.2rem;
   border: 1px solid var(--border-color);
   border-radius: 4px;
@@ -131,9 +131,8 @@
   border: 1px solid var(--blue-color);
 }
 
-
 .store-products__btn-save {
-  padding: 5px 10px;
+  padding: 8px 16px;
   font-size: 1.2rem;
   border-radius: 4px;
   cursor: pointer;
@@ -154,11 +153,12 @@
   position: absolute;
   right: 20px;
   width: fit-content;
-  width: 500px;
+  width: 300px;
 }
 
 .store-products__search input {
   padding: 10px 30px 10px 10px;
   border: 1px solid var(--border-color);
   width: 100%;
+  border-radius: 4px;
 }

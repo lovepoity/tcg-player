@@ -22,8 +22,10 @@ $store = $stmt->fetch(PDO::FETCH_ASSOC);
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="icon" href="/public/images/favicon.ico">
   <link rel="stylesheet" href="./assets/css/stores.css">
+  <link rel="stylesheet" href="./assets/css/dashboard.css">
   <link rel="stylesheet" href="./assets/css/product.css">
   <link rel="stylesheet" href="./assets/css/order.css">
+  <link rel="stylesheet" href="./assets/css/financial.css">
   <title>Store Control Panel</title>
 </head>
 
@@ -64,9 +66,12 @@ $store = $stmt->fetch(PDO::FETCH_ASSOC);
     </div>
   </div>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="./assets/js/stores.js"></script>
+  <script src="./assets/js/dashboard.js"></script>
   <script src="./assets/js/products.js"></script>
   <script src="./assets/js/order.js"></script>
+  <script src="./assets/js/financial.js"></script>
   <script>
     $(document).ready(function() {
       function loadPage(pageName, params = {}) {
@@ -89,6 +94,19 @@ $store = $stmt->fetch(PDO::FETCH_ASSOC);
             $('#main-content').html(response);
             $('.sidebar nav ul li a').removeClass('active');
             $('.sidebar nav ul li a[data-page="' + pageName + '"]').addClass('active');
+
+            if (window.currentDashboard) {
+              delete window.currentDashboard;
+            }
+            if (window.currentFinancial) {
+              delete window.currentFinancial;
+            }
+
+            if (pageName === 'store_dashboard') {
+              window.currentDashboard = new StoreDashboard();
+            } else if (pageName === 'store_financial') {
+              window.currentFinancial = new StoreFinancial();
+            }
 
             let newUrl = '?page=' + pageName;
             if (Object.keys(params).length > 0) {
